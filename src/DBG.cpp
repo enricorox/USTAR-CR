@@ -132,6 +132,131 @@ void DBG::parse_bcalm_file() {
     bcalm_file.close();
 }
 
+void DBG::parse_ggcat_file() {
+    ifstream bcalm_file;
+    bcalm_file.open(bcalm_file_name);
+
+    if(!bcalm_file.good()){
+        cerr << "parse_bcalm_file(): Can't access file " << bcalm_file_name << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // improve vector push_back() time
+    nodes.reserve(estimate_n_nodes());
+    size_t nodes_cap = nodes.capacity();
+    if(debug)
+        cout << "estimated number of unitigs: " << estimate_n_nodes() << endl;
+
+    // start parsing two line at a time
+    string line;
+    while(getline(bcalm_file, line)){
+        // escape comments
+        if(line[0] == '#')
+            continue;
+
+        size_t serial; // BCALM2 serial
+        char dyn_line[MAX_LINE_LEN]; // line after id and length
+
+        // make a new node
+        node_t node;
+
+        // check if line fits in dyn_line
+        if(line.size() > MAX_LINE_LEN){
+            cerr << "parse_bcalm_file(): Lines must be smaller than " << MAX_LINE_LEN << " characters! Found " << line.length() << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // ------ parse line ------
+        // >4 LN:i:21 C:0:1 L:+:0:- L:+:1:+ L:-:2:-
+
+        // check consistency:
+        // must have a def-line
+        if(line[0] != '>' || line.find("LN:i:") == string::npos || line.find("C:") == string::npos){
+            cerr << "parse_ggcat_file(): Bad formatted input file: no def-line found!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // find BCALM2 sequence serial and unitig length
+        // format: (ignore 1 char) (read 1 integer) (ignore 5 char) (read 1 integer) (read 1 string until new line)
+        sscanf(line.c_str(), "%*c %zd %*5c %d %[^\n]s", &serial, &node.length, dyn_line);
+
+        // check consistency:
+        // must have progressive IDs
+        if(serial != nodes.size()){
+            cerr << "parse_bcalm_file(): Bad formatted input file: lines must have progressive IDs!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // ------ parse colors ------
+        // dyn_line = "C:0:1 L:+:0:- L:+:1:+ L:-:2:-"
+        uint32_t sum_abundance = 0;
+        char *token = strtok(dyn_line + 5, " "); // tokenize abundances
+        do{
+            uint32_t abundance = atoi(token);
+            sum_abundance += abundance;
+            node.abundances.push_back(abundance);
+            token = strtok(nullptr, " "); // next token
+        }while(token != nullptr && token[0] != 'L');
+        node.average_abundance = sum_abundance / (double) node.abundances.size();
+        node.median_abundance = median(node.abundances);
+
+        while(token != nullptr && token[0] != 'L'){
+            int count, data; // left and right signs
+            sscanf(token, "%*2c %d %*c %d", &count, &data); // C:0:1
+
+            // decode RLE
+            for(int i = 0; i < count; i++)
+                node.colors.push_back(data);
+
+            // next color
+            token = strtok(nullptr, " ");
+        }
+
+        // ------ parse arcs ------
+        // token = "L:+:0:- L:+:1:+ L:-:2:-"
+        while(token != nullptr){
+            arc_t arc{};
+            char s1, s2; // left and right signs
+            sscanf(token, "%*2c %c %*c %d %*c %c", &s1, &arc.successor, &s2); // L:+:0:-
+            arc.forward = (s1 == '+');
+            arc.to_forward = (s2 == '+');
+            node.arcs.push_back(arc);
+            // next arcs
+            token = strtok(nullptr, " ");
+        }
+
+        // ------ parse sequence line ------
+        // TTGAAGGTAACGGATGTTCTAGTTTTTTCTCTTT}
+        if(!getline(bcalm_file, line)){
+            cerr << "parse_ggcat_file(): expected a sequence here!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // get the sequence
+        node.unitig = line;
+
+        // check consistency:
+        // there must be one color for each kmer!
+        if((node.unitig.size() - kmer_size + 1) != node.colors.size()){
+            cerr << "parse_ggcat_file(): Bad formatted input file: wrong number of abundances!" << endl;
+            cerr << "parse_ggcat_file(): Also make sure that kmer_size=" << kmer_size << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // save the node
+        nodes.push_back(node);
+
+        if(debug){
+            if(nodes_cap != nodes.capacity()){
+                cout << "parse_ggcat_file(): nodes capacity changed!\n";
+                nodes_cap = nodes.capacity();
+            }
+        }
+    }
+    nodes.shrink_to_fit();
+    bcalm_file.close();
+}
+
 DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
     this->bcalm_file_name = bcalm_file_name;
     this->kmer_size = kmer_size;
@@ -262,6 +387,36 @@ void DBG::to_bcalm_file(const string &file_name) {
 
     file.close();
 }
+
+void DBG::to_ggcat_file(const string &file_name) {
+    ofstream file;
+    file.open(file_name);
+
+    int id = 0;
+    for(const auto &node : nodes){
+        // >3 LN:i:33 ab:Z:2 2 3    L:+:138996:+
+        // CAAAACCAGACATAATAAAAATACTAATTAATG
+        file << ">" << id++ << " LN:i:" << node.length << " ";
+        int prev_color = -1;
+        int count = 0;
+        for(auto &color : node.colors)
+            if(prev_color == color)
+                count++;
+            else {
+                file << "C:" << count << ":" << prev_color << " ";
+                count = 0;
+                prev_color = color;
+            }
+        file << "C:" << count << ":" << prev_color << " ";
+
+        for(auto &arcs : node.arcs)
+            file << "L:" << (arcs.forward ? "+" : "-") << ":" << arcs.successor << ":" << (arcs.to_forward ? "+" : "-") << " ";
+        file << "\n" << node.unitig << "\n";
+    }
+
+    file.close();
+}
+
 
 bool DBG::validate(){
     string fasta_dbg = "unitigs.k"+ to_string(kmer_size) +".ustar.fa";

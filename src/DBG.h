@@ -29,6 +29,7 @@ struct node_t{
     string unitig;
     vector<uint32_t> abundances;
     vector<arc_t> arcs;
+    vector<int> colors;
 };
 
 class DBG{
@@ -155,6 +156,10 @@ public:
     const vector<node_t> *get_nodes();
 
     size_t estimate_n_nodes();
+
+    void parse_ggcat_file();
+
+    void to_ggcat_file(const string &file_name);
 };
 
 #endif //USTAR_DBG_H
