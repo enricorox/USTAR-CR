@@ -189,24 +189,18 @@ void DBG::parse_ggcat_file() {
 
         // ------ parse colors ------
         // dyn_line = "C:0:1 L:+:0:- L:+:1:+ L:-:2:-"
-        uint32_t sum_abundance = 0;
-        char *token = strtok(dyn_line + 5, " "); // tokenize abundances
-        do{
-            uint32_t abundance = atoi(token);
-            sum_abundance += abundance;
-            node.abundances.push_back(abundance);
-            token = strtok(nullptr, " "); // next token
-        }while(token != nullptr && token[0] != 'L');
-        node.average_abundance = sum_abundance / (double) node.abundances.size();
-        node.median_abundance = median(node.abundances);
+        char *token = strtok(dyn_line, " "); // tokenize colors
 
         while(token != nullptr && token[0] != 'L'){
-            int count, data; // left and right signs
-            sscanf(token, "%*2c %d %*c %d", &count, &data); // C:0:1
+            int count, color; // left and right signs
+            sscanf(token, "%*2c %d %*c %d", &color, &count); // C:0:1
+
+            if(debug)
+                printf("color %d, count %d\n", color, count);
 
             // decode RLE
             for(int i = 0; i < count; i++)
-                node.colors.push_back(data);
+                node.colors.push_back(color);
 
             // next color
             token = strtok(nullptr, " ");
@@ -238,7 +232,7 @@ void DBG::parse_ggcat_file() {
         // check consistency:
         // there must be one color for each kmer!
         if((node.unitig.size() - kmer_size + 1) != node.colors.size()){
-            cerr << "parse_ggcat_file(): Bad formatted input file: wrong number of abundances!" << endl;
+            cerr << "parse_ggcat_file(): Bad formatted input file: wrong number of colors!" << endl;
             cerr << "parse_ggcat_file(): Also make sure that kmer_size=" << kmer_size << endl;
             exit(EXIT_FAILURE);
         }
@@ -263,7 +257,7 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
     this->debug = debug;
 
     // build the graph
-    parse_bcalm_file();
+    parse_ggcat_file();
 
     // compute graph parameters
     size_t sum_unitig_length = 0;
@@ -394,20 +388,28 @@ void DBG::to_ggcat_file(const string &file_name) {
 
     int id = 0;
     for(const auto &node : nodes){
-        // >3 LN:i:33 ab:Z:2 2 3    L:+:138996:+
-        // CAAAACCAGACATAATAAAAATACTAATTAATG
+        if(debug)
+            printf("node %d\n", id);
+
+        // >0 LN:i:21 C:1:1 L:+:4:-
+        // CGTTTTTTTTTTTTTTTTTTT
         file << ">" << id++ << " LN:i:" << node.length << " ";
+
         int prev_color = -1;
         int count = 0;
-        for(auto &color : node.colors)
-            if(prev_color == color)
+        for(auto &color : node.colors) {
+            if (debug)
+                printf("\tcolor %d\n", color);
+            if (prev_color == color)
                 count++;
             else {
-                file << "C:" << count << ":" << prev_color << " ";
-                count = 0;
+                if (prev_color != -1)
+                    file << "C:" << count << ":" << prev_color << " ";
+                count = 1;
                 prev_color = color;
             }
-        file << "C:" << count << ":" << prev_color << " ";
+        }
+        file << "C:" << prev_color << ":" << count << " ";
 
         for(auto &arcs : node.arcs)
             file << "L:" << (arcs.forward ? "+" : "-") << ":" << arcs.successor << ":" << (arcs.to_forward ? "+" : "-") << " ";
@@ -420,7 +422,7 @@ void DBG::to_ggcat_file(const string &file_name) {
 
 bool DBG::validate(){
     string fasta_dbg = "unitigs.k"+ to_string(kmer_size) +".ustar.fa";
-    to_bcalm_file(fasta_dbg);
+    to_ggcat_file(fasta_dbg);
 
     ifstream bcalm_dbg, this_dbg;
     bcalm_dbg.open(bcalm_file_name);
