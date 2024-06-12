@@ -446,9 +446,9 @@ bool DBG::verify_input(){
         good = false;
     }
     if(validate())
-        cout << "YES! DBG is the same as BCALM2 one!\n";
+        cout << "YES! DBG is the same as input file!\n";
     else {
-        cout << "OOPS! DBG is NOT the same as BCALM2 one!\n";
+        cout << "OOPS! DBG is NOT the same as input file!\n";
         good = false;
     }
     cout << endl;
