@@ -14,7 +14,7 @@
 
 set -e
 
-cd "/nfsd/bcb/bcbg/prog_9/USTAR"
+cd "/nfsd/bcb/bcbg/rossigno/USTAR3"
 
 srun cmake .
 
