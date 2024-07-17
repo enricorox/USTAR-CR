@@ -72,7 +72,7 @@ void Analyzer::parse_file() {
 void Analyzer::print_stats() {
     cout << "\nkmers stats:\n";
     cout << "   GC-content: " << double (F[C] + F[G]) / double (F[A] + F[C] + F[T] + F[G]) << "\n";
-    cout << "counts stats:\n";
+    cout << "colors stats:\n";
     cout << "   min:        " << min << "\n";
     cout << "   mean:       " << mean << "\n";
     cout << "   max:        " << max << "\n";

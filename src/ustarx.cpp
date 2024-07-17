@@ -16,7 +16,7 @@ using namespace std::chrono;
 
 struct params_t{
     string input_file_name = "out.ustar.fa";
-    string counts_file_name = "out.ustar.counts";
+    string counts_file_name = "out.ustar.colors";
     string output_file_name = "ustar-kmers.txt";
     encoding_t encoding = encoding_t::PLAIN;
     int kmer_size = 31;
@@ -25,9 +25,9 @@ struct params_t{
 };
 
 void print_help(const params_t &params){
-    cout << "Decode and extract canonical kmers and counts from USTAR (or UST) output files.\n\n";
+    cout << "Decode and extract canonical kmers and colors from USTAR (or UST) output files.\n\n";
 
-    cout << "Syntax: ./ustarx -i <ustar-fasta> -c <ustar-counts>\n\n";
+    cout << "Syntax: ./ustarx -i <ustar-fasta> -c <ustar-colors>\n\n";
 
     cout << "Options:\n\n";
 
@@ -56,7 +56,7 @@ void print_params(const params_t &params){
     cout << "Params:\n";
     cout << "   kmer size:              " << params.kmer_size << "\n";
     cout << "   input file:             " << params.input_file_name << "\n";
-    cout << "   counts file name:       " << params.counts_file_name << "\n";
+    cout << "   colors file name:       " << params.counts_file_name << "\n";
     cout << "   output file name:       " << params.output_file_name << "\n";
     cout << "   sort:                   " << (params.sort ? "true" : "false") << "\n";
     cout << "   encoding:               " << inv_map<encoding_t>(encoding_names, params.encoding) << "\n";
@@ -132,7 +132,7 @@ int main(int argc, char **argv){
 
     Decoder decoder(params.input_file_name, params.counts_file_name, params.kmer_size, params.debug);
 
-    cout << "Decoding counts...\n";
+    cout << "Decoding colors...\n";
     auto start_time = steady_clock::now();
     decoder.decode(params.encoding);
     auto stop_time = std::chrono::steady_clock::now();

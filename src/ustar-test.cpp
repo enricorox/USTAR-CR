@@ -34,11 +34,11 @@ int main(){
         Sorter sorter(seeding_method_t::HIGHER_AVERAGE_ABUNDANCE, extending_method_t::LESS_CONNECTED);
         SPSS spss(&dbg, &sorter, false, true);
         spss.compute_path_cover();
-        spss.extract_simplitigs_and_counts();
+        spss.extract_simplitigs_and_colors();
         spss.print_stats();
-        Encoder encoder(spss.get_simplitigs(), spss.get_counts());
+        Encoder encoder(spss.get_simplitigs(), spss.get_colors());
         encoder.to_fasta_file(file_name_base + ".ustar.fa");
-        encoder.to_counts_file(file_name_base + ".ustar.simplitigs_counts");
+        encoder.to_counts_file(file_name_base + ".ustar.simplitigs_colors");
 
         // verify output
         ifstream fasta;

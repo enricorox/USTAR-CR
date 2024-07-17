@@ -68,10 +68,10 @@ const map<string, extending_method_t> extending_method_names = {
 
 enum class postprocess_t{
     NONE,           // do nothing
-    AVG,            // sort counts and sequences based on average counts
-    AVG_FLIP,       // do AVG and flip counts and rc sequences if necessary
-    AVG_FB,         // sort counts and sequences based on average of first and back of counts vector
-    AVG_FB_FLIP     // do AVG_FB and flip counts and rc sequences if necessary
+    AVG,            // sort colors and sequences based on average colors
+    AVG_FLIP,       // do AVG and flip colors and rc sequences if necessary
+    AVG_FB,         // sort colors and sequences based on average of first and back of colors vector
+    AVG_FB_FLIP     // do AVG_FB and flip colors and rc sequences if necessary
 };
 
 const map<string, postprocess_t> postprocess_method_names = {

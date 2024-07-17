@@ -20,7 +20,7 @@ class Encoder{
     vector<double> avg_counts;
 
     const vector<string> *simplitigs;
-    const vector<vector<uint32_t>> *simplitigs_counts;
+    const vector<vector<uint32_t>> *simplitigs_colors;
     size_t n_kmers = 0;
 
     vector<uint32_t> symbols;
@@ -40,7 +40,7 @@ class Encoder{
     void compact_counts();
 
 public:
-    Encoder(const vector<string> *simplitigs, const vector<vector<uint32_t>> *simplitigs_counts, bool debug=false);
+    Encoder(const vector<string> *simplitigs, const vector<vector<uint32_t>> *simplitigs_colors, bool debug=false);
 
     void encode(encoding_t encoding_type);
 
@@ -49,5 +49,7 @@ public:
     void to_counts_file(const string &file_name);
 
     void print_stat();
+
+    void to_colors_file(const string &file_name);
 };
 #endif //USTAR_ENCODER_H

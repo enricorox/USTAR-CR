@@ -47,7 +47,7 @@ class DBG{
 
     /**
      * Parse the BCALM2 file
-     * @param bcalm_file_name Path of a file made by BCALM2 with '-all-abundance-simplitigs_counts'
+     * @param bcalm_file_name Path of a file made by BCALM2 with '-all-abundance-simplitigs_colors'
      */
     void parse_bcalm_file();
 
@@ -139,9 +139,9 @@ public:
      * Get the kmers abundances in the given path
      * @param path_nodes the nodes of the path
      * @param forwards how nodes must be read
-     * @param counts abundances are returned here
+     * @param colors abundances are returned here
      */
-    void get_counts(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards, vector<uint32_t> &counts);
+    void get_colors(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards, vector<uint32_t> &colors);
 
     uint32_t get_n_kmers() const;
 

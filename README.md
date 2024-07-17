@@ -43,6 +43,7 @@ your bcalm file with your preferred kmer counter.
 If you want to check that __kmers and counts__ are correct,
 * `./ustarx -k <kmer-size> -i <ustar-fasta> -c <ustar-counts> -s`
 * `./validate <kmer-size> <your-multi-fasta> <ustar-kmers-counts>` 
+* `./ustarx -k <kmer-size> -i <ustar-fasta> -c <ustar-colors> -s`
 
 Note that you'll need to install [Jellyfish-2](https://github.com/zippav/Jellyfish-2) in order to use `validate`.
 

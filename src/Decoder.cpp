@@ -54,7 +54,7 @@ void Decoder::extract_kmers_and_counts(const string &output_file_name) {
             output << ((kmer < kmer_rc) ? kmer : kmer_rc);
 
             if(n_kmers >= counts.size()){
-                cerr << "extract_kmers_and_counts(): There are too few counts" << endl;
+                cerr << "extract_kmers_and_counts(): There are too few colors" << endl;
                 exit(EXIT_FAILURE);
             }
 
@@ -63,7 +63,7 @@ void Decoder::extract_kmers_and_counts(const string &output_file_name) {
     }
 
     if(n_kmers < counts.size()){
-        cerr << "extract_kmers_and_counts(): There are too much counts" << endl;
+        cerr << "extract_kmers_and_counts(): There are too much colors" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -127,7 +127,7 @@ void Decoder::decode(encoding_t encoding) {
                 if(debug)
                     cout << "Primary key = " << primary_key << endl;
 
-                // read all the other counts
+                // read all the other colors
                 uint32_t c;
                 while(counts_file >> c)
                     counts.push_back(c);
@@ -145,6 +145,6 @@ void Decoder::decode(encoding_t encoding) {
             exit(EXIT_FAILURE);
     }
     if(debug)
-        cout <<"Found " << counts.size() << " counts\n";
+        cout <<"Found " << counts.size() << " colors\n";
     counts_file.close();
 }

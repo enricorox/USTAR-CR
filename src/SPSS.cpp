@@ -30,12 +30,12 @@ const vector<string> * SPSS::get_simplitigs(){
     return &simplitigs;
 }
 
-const vector<vector<uint32_t>> * SPSS::get_counts(){
+const vector<vector<uint32_t>> * SPSS::get_colors(){
     if(simplitigs.empty()){
         cerr << "There are no simplitigs!" << endl;
         exit(EXIT_FAILURE);
     }
-    return &counts;
+    return &colors;
 }
 
 size_t SPSS::compute_contig_length(const vector<node_idx_t>& nodes){
@@ -304,23 +304,23 @@ void SPSS::compute_path_cover(bool two_way) {
     }
 }
 
-void SPSS::extract_simplitigs_and_counts(){
+void SPSS::extract_simplitigs_and_colors(){
     n_simplitigs = path_cover_nodes.size();
     if(n_simplitigs == 0){
-        cerr << "extract_simplitigs_and_counts(): Need to compute a path cover first!" << endl;
+        cerr << "extract_simplitigs_and_colors(): Need to compute a path cover first!" << endl;
         exit(EXIT_FAILURE);
     }
 
-    vector<uint32_t> simplitig_counts;
-    counts.reserve(n_simplitigs);
+    vector<uint32_t> simplitig_colors;
+    colors.reserve(n_simplitigs);
     for(size_t i = 0; i < n_simplitigs; i++){
         // extract simplitigs
         simplitigs.push_back(dbg->spell(path_cover_nodes[i], path_cover_forwards[i]));
 
-        // extract simplitigs_counts
-        simplitig_counts.clear();
-        dbg->get_counts(path_cover_nodes[i], path_cover_forwards[i], simplitig_counts);
-        counts.push_back(simplitig_counts);
+        // extract simplitigs_colors
+        simplitig_colors.clear();
+        dbg->get_colors(path_cover_nodes[i], path_cover_forwards[i], simplitig_colors);
+        colors.push_back(simplitig_colors);
     }
 }
 

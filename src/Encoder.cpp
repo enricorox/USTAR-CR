@@ -11,27 +11,27 @@
 #include "commons.h"
 #include "bwt.hpp"
 
-Encoder::Encoder(const vector<string> *simplitigs, const vector<vector<uint32_t>> *simplitigs_counts, bool debug) {
-    if (simplitigs_counts->empty()) {
-        cerr << "to_counts_file(): There are no simplitigs_counts!" << endl;
+Encoder::Encoder(const vector<string> *simplitigs, const vector<vector<uint32_t>> *simplitigs_colors, bool debug) {
+    if (simplitigs_colors->empty()) {
+        cerr << "Encoder(): There are no simplitigs_colors!" << endl;
         exit(EXIT_FAILURE);
     }
-    if(simplitigs->size() != simplitigs_counts->size()){
-        cerr << "Encoder(): Got an incorrect number of simplitigs_counts or simplitigs!" << endl;
+    if(simplitigs->size() != simplitigs_colors->size()){
+        cerr << "Encoder(): Got an incorrect number of simplitigs_colors or simplitigs!" << endl;
         exit(EXIT_FAILURE);
     }
 
     this->debug = debug;
     this->simplitigs = simplitigs;
-    this->simplitigs_counts = simplitigs_counts;
+    this->simplitigs_colors = simplitigs_colors;
 
     simplitigs_order.reserve(simplitigs->size());
     for(size_t i = 0; i < simplitigs->size(); i++)
         simplitigs_order.push_back(i);
 
-    flips.resize(simplitigs_counts->size(), false);
+    flips.resize(simplitigs_colors->size(), false);
 
-    for(auto &counts : *simplitigs_counts)
+    for(auto &counts : *simplitigs_colors)
         n_kmers += counts.size();
 }
 
@@ -84,7 +84,7 @@ void Encoder::to_counts_file(const string &file_name) {
             // no break here
         case encoding_t::PLAIN:
             for(auto i : simplitigs_order){
-                auto &simplitig = (*simplitigs_counts)[i];
+                auto &simplitig = (*simplitigs_colors)[i];
                 for(size_t j = 0; j < simplitig.size(); j++){
                     size_t curr = simplitig[j];
                     if(flips[i])
@@ -96,7 +96,74 @@ void Encoder::to_counts_file(const string &file_name) {
             break;
         case encoding_t::BINARY:
             for(auto i : simplitigs_order){
-                auto &simplitig = (*simplitigs_counts)[i];
+                auto &simplitig = (*simplitigs_colors)[i];
+                for(size_t j = 0; j < simplitig.size(); j++){
+                    size_t curr = simplitig[j];
+                    if(flips[i])
+                        curr = simplitig[simplitig.size() - 1 - j];
+                    if(curr > UINT32_MAX){
+                        cerr << "to_counts_file(): count is too large for UINT16: " << curr << " > " << UINT32_MAX << endl;
+                        exit(EXIT_FAILURE);
+                    }
+                    uint32_t c = curr;
+                    //encoded.write((char*) &curr, sizeof(curr));
+                    encoded.write((char*) &c, sizeof(c));
+                }
+            }
+            break;
+        default:
+            cerr << "to_counts_file(): Unknown encoding" << endl;
+            exit(EXIT_FAILURE);
+    }
+    encoded.close();
+}
+
+void Encoder::to_colors_file(const string &file_name) {
+    ofstream encoded;
+    encoded.open(file_name);
+    if(!encoded.good()){
+        cerr << "Can't open output file: " << file_name + ".rle" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    switch(encoding) {
+        case encoding_t::AVG_FLIP_RLE:
+            // no break here
+        case encoding_t::FLIP_RLE:
+            // no break here
+        case encoding_t::AVG_RLE:
+            // no break here
+        case encoding_t::RLE:
+            for(size_t i = 0; i < symbols.size(); i++){
+                encoded << symbols[i];
+                if(runs[i] != 1)
+                    encoded << RLE_SEPARATOR << runs[i];
+                encoded << "\n";
+            }
+            encoded.close();
+            break;
+        case encoding_t::BWT:
+            encoded << bwt_primary_index << "\n";
+            for(auto c : compacted_counts)
+                encoded << c << "\n";
+            break;
+        case encoding_t::FLIP:
+            // no break here
+        case encoding_t::PLAIN:
+            for(auto i : simplitigs_order){
+                auto &simplitig = (*simplitigs_colors)[i];
+                for(size_t j = 0; j < simplitig.size(); j++){
+                    size_t curr = simplitig[j];
+                    if(flips[i])
+                        curr = simplitig[simplitig.size() - 1 - j];
+                    encoded << curr << (debug ? " " : "\n");
+                }
+                if (debug) encoded << "\n";
+            }
+            break;
+        case encoding_t::BINARY:
+            for(auto i : simplitigs_order){
+                auto &simplitig = (*simplitigs_colors)[i];
                 for(size_t j = 0; j < simplitig.size(); j++){
                     size_t curr = simplitig[j];
                     if(flips[i])
@@ -174,10 +241,10 @@ void Encoder::encode(encoding_t encoding_type) {
 
 void Encoder::do_flip(){
     flips[0] = false;
-    for(size_t i = 1; i < simplitigs_counts->size(); i++){
-        uint32_t prev_last = (*simplitigs_counts)[i - 1].back();
-        uint32_t curr_first = (*simplitigs_counts)[i].front();
-        uint32_t curr_last = (*simplitigs_counts)[i].back();
+    for(size_t i = 1; i < simplitigs_colors->size(); i++){
+        uint32_t prev_last = (*simplitigs_colors)[i - 1].back();
+        uint32_t curr_first = (*simplitigs_colors)[i].front();
+        uint32_t curr_last = (*simplitigs_colors)[i].back();
         if(d(prev_last, curr_first) == 0) // that's ok
             continue;
         if(d(prev_last, curr_last) == 0) // we can do better!
@@ -190,9 +257,9 @@ void Encoder::do_RLE(){
     uint32_t sum_run = 0;
 
     bool first = true;
-    for (size_t i = 0; i < simplitigs_counts->size(); i++) {
-        // accessing simplitigs_counts based on computed order!
-        auto &counts = (*simplitigs_counts)[simplitigs_order[i]];
+    for (size_t i = 0; i < simplitigs_colors->size(); i++) {
+        // accessing simplitigs_colors based on computed order!
+        auto &counts = (*simplitigs_colors)[simplitigs_order[i]];
         for (size_t k = 0; k < counts.size(); k++) {
             uint32_t curr;
             if(!flips[i]) // forward visiting
@@ -200,7 +267,7 @@ void Encoder::do_RLE(){
             else // backward visiting
                 curr = counts[counts.size() - 1 - k];
 
-            // stream of simplitigs_counts here
+            // stream of simplitigs_colors here
             if (first || curr == prev) {
                 count++;
                 first = false;
@@ -225,9 +292,9 @@ void Encoder::do_RLE(){
         // sum_run must be equal to n_kmers!!!
         if(sum_run != n_kmers){
             if(sum_run > n_kmers)
-                cerr << "OOPS! We have too many counts!" << endl;
+                cerr << "OOPS! We have too many colors!" << endl;
             else
-                cerr << "OOPS! We have too less counts!" << endl;
+                cerr << "OOPS! We have too less colors!" << endl;
             exit(EXIT_FAILURE);
         }else
             cout << "YES! Counts number is correct!\n";
@@ -236,9 +303,9 @@ void Encoder::do_RLE(){
 
 void Encoder::compute_avg() {
     // pre-allocate the vector
-    avg_counts.reserve(simplitigs_counts->size());
+    avg_counts.reserve(simplitigs_colors->size());
 
-    for(auto &simplitig_counts : *simplitigs_counts){
+    for(auto &simplitig_counts : *simplitigs_colors){
         if(encoding == encoding_t::AVG_RLE) {
             double sum = 0;
             for (uint32_t c: simplitig_counts)
@@ -267,14 +334,14 @@ void Encoder::print_stat(){
             // no break here
         case encoding_t::RLE:
             cout << "   Number of runs: " << runs.size() << "\n";
-            cout << "   Average parse_file:    " << avg_run << "\n";
+            cout << "   Average run:    " << avg_run << "\n";
             break;
         case encoding_t::BWT:
             // no break here
         case encoding_t::FLIP:
             // no break here
         case encoding_t::PLAIN:
-            cout << "   Number of counts: " << n_kmers << "\n";
+            cout << "   Number of colors: " << n_kmers << "\n";
             break;
         default:
             cerr << "to_counts_file(): Unknown encoding" << endl;
@@ -286,7 +353,7 @@ void Encoder::print_stat(){
 void Encoder::compact_counts() {
     compacted_counts.reserve(n_kmers);
     for(auto i : simplitigs_order){
-        auto &simplitig = (*simplitigs_counts)[i];
+        auto &simplitig = (*simplitigs_colors)[i];
         for(size_t j = 0; j < simplitig.size(); j++){
             size_t curr = simplitig[j];
             if(flips[i])

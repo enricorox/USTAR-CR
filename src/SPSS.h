@@ -32,7 +32,7 @@ class SPSS {
 
     // simplitigs
     vector<string> simplitigs;
-    vector<vector<uint32_t>> counts;
+    vector<vector<uint32_t>> colors;
     size_t n_simplitigs = 0;
 
     void extends(vector<node_idx_t> &path_nodes, vector<bool> &path_forwards);
@@ -44,11 +44,11 @@ public:
 
     void print_stats();
 
-    void extract_simplitigs_and_counts();
+    void extract_simplitigs_and_colors();
 
     const vector<string> *get_simplitigs();
 
-    const vector<vector<uint32_t>> *get_counts();
+    const vector<vector<uint32_t>> *get_colors();
 
     size_t get_score();
 
@@ -59,5 +59,6 @@ public:
                               vector<bool> &forwards);
 
     size_t compute_contig_length(const vector<node_idx_t>& nodes);
+
 };
 #endif //USTAR_SPSS_H

@@ -137,7 +137,7 @@ void DBG::parse_ggcat_file() {
     bcalm_file.open(bcalm_file_name);
 
     if(!bcalm_file.good()){
-        cerr << "parse_bcalm_file(): Can't access file " << bcalm_file_name << endl;
+        cerr << "parse_ggcat_file(): Can't access file " << bcalm_file_name << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -162,7 +162,7 @@ void DBG::parse_ggcat_file() {
 
         // check if line fits in dyn_line
         if(line.size() > MAX_LINE_LEN){
-            cerr << "parse_bcalm_file(): Lines must be smaller than " << MAX_LINE_LEN << " characters! Found " << line.length() << endl;
+            cerr << "parse_ggcat_file(): Lines must be smaller than " << MAX_LINE_LEN << " characters! Found " << line.length() << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -187,16 +187,19 @@ void DBG::parse_ggcat_file() {
             exit(EXIT_FAILURE);
         }
 
+        if(debug)
+            cout << "node " << serial << ", size " << node.length << "\n";
+
         // ------ parse colors ------
         // dyn_line = "C:0:1 L:+:0:- L:+:1:+ L:-:2:-"
         char *token = strtok(dyn_line, " "); // tokenize colors
 
         while(token != nullptr && token[0] != 'L'){
             int count, color; // left and right signs
-            sscanf(token, "%*2c %d %*c %d", &color, &count); // C:0:1
+            sscanf(token, "%*2c %x %*c %d", &color, &count); // C:0:1
 
             if(debug)
-                printf("color %d, count %d\n", color, count);
+                cout << "\tcolor " << color << ", count " << count << "\n";
 
             // decode RLE
             for(int i = 0; i < count; i++)
@@ -264,7 +267,8 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
     double sum_abundances = 0;
     for(const auto &node : nodes) {
         n_arcs += node.arcs.size();
-        n_kmers += node.abundances.size();
+        // n_kmers += node.abundances.size();
+        n_kmers += node.colors.size();
         sum_unitig_length += node.length;
         sum_abundances += node.average_abundance * (double) node.abundances.size();
 
@@ -513,18 +517,18 @@ string DBG::spell(const vector<node_idx_t> &path_nodes, const vector<bool> &forw
     return contig;
 }
 
-void DBG::get_counts(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards, vector<uint32_t> &counts) {
+void DBG::get_colors(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards, vector<uint32_t> &colors) {
     //          3 5
     // forward: A C T T
     //          5 3
     // rev-com: A A G T
     for (size_t i = 0; i < path_nodes.size(); i++)
         if (forwards[i]) // read forward
-            for(uint32_t abundance : nodes.at(path_nodes[i]).abundances)
-                counts.push_back(abundance);
+            for(uint32_t color : nodes.at(path_nodes[i]).colors)
+                colors.push_back(color);
         else // read backward
-            for(int k = int (nodes.at(path_nodes[i]).abundances.size() - 1); k > -1; k--)
-                counts.push_back(nodes.at(path_nodes[i]).abundances[k]);
+            for(int k = int (nodes.at(path_nodes[i]).colors.size() - 1); k > -1; k--)
+                colors.push_back(nodes.at(path_nodes[i]).colors[k]);
 }
 
 bool DBG::check_path_consistency(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards) {

@@ -15,6 +15,7 @@ struct params_t{
     string input_file_name{};
     string fasta_file_name{};
     string counts_file_name{};
+    string colors_file_name{};
 
     int kmer_size = 31;
 
@@ -32,7 +33,7 @@ struct params_t{
 
 void print_help(const params_t &params){
     cout << "Find a Spectrum Preserving String Set (aka simplitigs) for the input file.\n";
-    cout << "Compute the kmer counts vector.\n\n";
+    cout << "Compute the kmer colors vector.\n\n";
 
     cout << "Usage: ./USTAR -i <input_file_name>\n\n";
 
@@ -40,7 +41,7 @@ void print_help(const params_t &params){
 
     cout << "   -k  kmer size, must be the same of BCALM2 [" << params.kmer_size << "]\n\n";
 
-    cout << "   -c  counts file name [" << params.counts_file_name << "]\n\n";
+    cout << "   -c  colors file name [" << params.colors_file_name << "]\n\n";
 
     cout << "   -o  fasta file name [" << params.fasta_file_name << "]\n\n";
 
@@ -86,7 +87,7 @@ void print_help(const params_t &params){
     cout << "   -e  encoding [" << inv_map<encoding_t>(encoding_names, params.encoding)<< "]\n";
     cout << "       plain           do not use any encoding\n";
     cout << "       rle             use special Run Length Encoding\n";
-    cout << "       avg_rle         sort simplitigs by average counts and use RLE\n";
+    cout << "       avg_rle         sort simplitigs by average colors and use RLE\n";
     cout << "       flip_rle        make contiguous runs by flipping simplitigs if necessary and use RLE\n";
     cout << "       avg_flip_rle    make contiguous runs by sorting by average, flipping simplitigs if necessary and use RLE\n";
     cout << "\n";
@@ -101,7 +102,7 @@ void print_params(const params_t &params){
     cout << "   visited nodes depth:    " << params.visited_depth << "\n";
     cout << "   phases:                 " << (params.phases?"true":"false") << "\n";
     cout << "   fasta file name:        " << params.fasta_file_name << "\n";
-    cout << "   counts file name:       " << params.counts_file_name << "\n";
+    cout << "   colors file name:       " << params.colors_file_name << "\n";
     cout << "   seeding method:         " << inv_map<seeding_method_t>(seeding_method_names, params.seeding_method) << "\n";
     cout << "   extending method:       " << inv_map<extending_method_t>(extending_method_names, params.extending_method) << "\n";
     cout << "   encoding:               " << inv_map<encoding_t>(encoding_names, params.encoding) << "\n";
@@ -113,6 +114,7 @@ void print_params(const params_t &params){
 void parse_cli(int argc, char **argv, params_t &params){
     bool got_input = false;
     bool new_counts_name = false;
+    bool new_colors_name = false;
     bool new_fasta_name = false;
     int c;
     while((c = getopt(argc, argv, "i:k:vo:D:dhe:s:x:c:pP")) != -1){
@@ -125,9 +127,15 @@ void parse_cli(int argc, char **argv, params_t &params){
                 params.fasta_file_name = string(optarg);
                 new_fasta_name = true;
                 break;
+            /*
             case 'c':
                 params.counts_file_name = string(optarg);
                 new_counts_name = true;
+                break;
+            */
+            case 'c':
+                params.colors_file_name = string(optarg);
+                new_colors_name = true;
                 break;
             case 'k':
                 params.kmer_size = atoi(optarg);
@@ -213,7 +221,9 @@ void parse_cli(int argc, char **argv, params_t &params){
     if(!new_fasta_name)
         params.fasta_file_name = base_name + ".ustar.fa";
     if(!new_counts_name)
-        params.counts_file_name = base_name + ".ustar" + encoding_suffixes.at(params.encoding) + ".counts";
+        params.counts_file_name = base_name + ".ustar" + encoding_suffixes.at(params.encoding) + ".colors";
+    if(!new_colors_name)
+        params.colors_file_name = base_name + ".ustar" + encoding_suffixes.at(params.encoding) + ".colors";
 }
 
 int main(int argc, char **argv) {
@@ -253,17 +263,21 @@ int main(int argc, char **argv) {
     stop_time = steady_clock::now();
     cout << "Computing time: " << duration_cast<milliseconds>(stop_time - start_time).count() << " ms\n";
 
-    cout << "Extracting simplitigs and kmers counts..." << endl;
-    spss.extract_simplitigs_and_counts();
+    cout << "Extracting simplitigs and kmers colors..." << endl;
+    spss.extract_simplitigs_and_colors();
     spss.print_stats();
 
-    Encoder encoder(spss.get_simplitigs(), spss.get_counts(), params.debug);
+    Encoder encoder(spss.get_simplitigs(), spss.get_colors(), params.debug);
     encoder.encode(params.encoding);
     encoder.print_stat();
     encoder.to_fasta_file(params.fasta_file_name);
     cout << "Simplitigs written to disk: " << params.fasta_file_name << endl;
-    encoder.to_counts_file(params.counts_file_name);
-    cout << "Counts written to disk: " << params.counts_file_name << endl;
+
+    // encoder.to_counts_file(params.counts_file_name);
+    // cout << "Counts written to disk: " << params.counts_file_name << endl;
+
+    encoder.to_colors_file(params.colors_file_name);
+    cout << "Colors written to disk: " << params.colors_file_name << endl;
 
     return EXIT_SUCCESS;
 }
