@@ -183,7 +183,7 @@ void DBG::parse_ggcat_file() {
         // check consistency:
         // must have progressive IDs
         if(serial != nodes.size()){
-            cerr << "parse_bcalm_file(): Bad formatted input file: lines must have progressive IDs!" << endl;
+            cerr << "parse_ggcat_file(): Bad formatted input file: lines must have progressive IDs!" << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -223,7 +223,7 @@ void DBG::parse_ggcat_file() {
         }
 
         // ------ parse sequence line ------
-        // TTGAAGGTAACGGATGTTCTAGTTTTTTCTCTTT}
+        // TTGAAGGTAACGGATGTTCTAGTTTTTTCTCTTT
         if(!getline(bcalm_file, line)){
             cerr << "parse_ggcat_file(): expected a sequence here!" << endl;
             exit(EXIT_FAILURE);
@@ -235,7 +235,7 @@ void DBG::parse_ggcat_file() {
         // check consistency:
         // there must be one color for each kmer!
         if((node.unitig.size() - kmer_size + 1) != node.colors.size()){
-            cerr << "parse_ggcat_file(): Bad formatted input file: wrong number of colors!" << endl;
+            cerr << "parse_ggcat_file(): Bad formatted input file: wrong number of colors in line " << serial << "!" << endl;
             cerr << "parse_ggcat_file(): Also make sure that kmer_size=" << kmer_size << endl;
             exit(EXIT_FAILURE);
         }

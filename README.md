@@ -27,7 +27,7 @@ in order to compute a compacted de Bruijn graph (cdBG) of your multi-fasta file.
 
 ## How to run USTAR2
 Run BCALM2 first: 
-* `./bcalm -kmer-size <kmer-size> -in <your-multi-fasta> -all-abundance-counts`
+* `./bcalm -kmer-size <kmer-size> -in <your-multi-fasta> -all-abundance-colors`
 
 Then USTAR2:
 * `./ustar -k <kmer-size> -i <bcalm-output>`
@@ -41,9 +41,8 @@ You can check that the output file contains the same k-mers of
 your bcalm file with your preferred kmer counter.
 
 If you want to check that __kmers and counts__ are correct,
-* `./ustarx -k <kmer-size> -i <ustar-fasta> -c <ustar-counts> -s`
-* `./validate <kmer-size> <your-multi-fasta> <ustar-kmers-counts>` 
 * `./ustarx -k <kmer-size> -i <ustar-fasta> -c <ustar-colors> -s`
+* `./validate <kmer-size> <your-multi-fasta> <ustar-kmers-colors>` 
 
 Note that you'll need to install [Jellyfish-2](https://github.com/zippav/Jellyfish-2) in order to use `validate`.
 
