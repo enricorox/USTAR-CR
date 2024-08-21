@@ -45,7 +45,7 @@ const map<string, seeding_method_t> seeding_method_names = {
 enum class extending_method_t{
     FIRST,
     RANDOM,
-    SIMILAR_ABUNDANCE,
+    SIMILAR_COLOR,
     SIMILAR_MEDIAN_COLOR,
     LOWER_MEDIAN_COLOR,
     BIGGER_LENGTH,
@@ -57,7 +57,7 @@ enum class extending_method_t{
 const map<string, extending_method_t> extending_method_names = {
         {"f", extending_method_t::FIRST},
         {"r", extending_method_t::RANDOM},
-        {"=a", extending_method_t::SIMILAR_ABUNDANCE},
+        {"=a", extending_method_t::SIMILAR_COLOR},
         {"=ma", extending_method_t::SIMILAR_MEDIAN_COLOR},
         {"-l", extending_method_t::SMALLER_LENGTH},
         {"-ma", extending_method_t::LOWER_MEDIAN_COLOR},

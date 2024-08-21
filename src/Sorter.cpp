@@ -208,19 +208,19 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
         case extending_method_t::FIRST: // choose always the first
             // do nothing, it's before the cycle
             break;
-        case extending_method_t::SIMILAR_ABUNDANCE: {
+        case extending_method_t::SIMILAR_COLOR: {
                 uint32_t best_value = UINT32_MAX;
                 for(size_t i = 0; i < to_nodes.size(); i++){
-                    uint32_t ab_seed = nodes->at(seed).abundances.back();
-                    uint32_t ab_succ = nodes->at(to_nodes.at(i)).abundances.front();
+                    uint32_t col_seed = nodes->at(seed).colors.back();
+                    uint32_t col_succ = nodes->at(to_nodes.at(i)).colors.front();
 
                     if(!forward)
-                        ab_seed = nodes->at(seed).abundances.front();
+                        col_seed = nodes->at(seed).colors.front();
                     if(!to_forwards.at(i))
-                        ab_succ = nodes->at(to_nodes.at(i)).abundances.back();
+                        col_succ = nodes->at(to_nodes.at(i)).colors.back();
 
                     // compute the distance
-                    uint32_t diff = d(ab_seed, ab_succ);
+                    uint32_t diff = d(col_seed, col_succ);
 
                     if(diff == 0){ // same abundance!
                         best = i;
