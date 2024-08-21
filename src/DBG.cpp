@@ -194,6 +194,7 @@ void DBG::parse_ggcat_file() {
         // dyn_line = "C:0:1 L:+:0:- L:+:1:+ L:-:2:-"
         char *token = strtok(dyn_line, " "); // tokenize colors
 
+        uint32_t sum_colors = 0;
         while(token != nullptr && token[0] != 'L'){
             int count, color; // left and right signs
             sscanf(token, "%*2c %x %*c %d", &color, &count); // C:0:1
@@ -202,12 +203,17 @@ void DBG::parse_ggcat_file() {
                 cout << "\tcolor " << color << ", count " << count << "\n";
 
             // decode RLE
-            for(int i = 0; i < count; i++)
+            for(int i = 0; i < count; i++) {
                 node.colors.push_back(color);
+                sum_colors += sum_colors + color;
+            }
 
             // next color
             token = strtok(nullptr, " ");
         }
+
+        node.average_color = sum_colors / (double) node.colors.size();
+        node.median_color = median(node.colors);
 
         // ------ parse arcs ------
         // token = "L:+:0:- L:+:1:+ L:-:2:-"

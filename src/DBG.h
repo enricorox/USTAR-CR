@@ -29,7 +29,9 @@ struct node_t{
     string unitig;
     vector<uint32_t> abundances;
     vector<arc_t> arcs;
-    vector<int> colors;
+    vector<uint32_t> colors;
+    uint32_t median_color;
+    double average_color;
 };
 
 class DBG{

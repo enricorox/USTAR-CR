@@ -31,7 +31,7 @@ int main(){
         dbg.verify_input();
         dbg.print_stat();
 
-        Sorter sorter(seeding_method_t::HIGHER_AVERAGE_ABUNDANCE, extending_method_t::LESS_CONNECTED);
+        Sorter sorter(seeding_method_t::HIGHER_AVERAGE_COLOR, extending_method_t::LESS_CONNECTED);
         SPSS spss(&dbg, &sorter, false, true);
         spss.compute_path_cover();
         spss.extract_simplitigs_and_colors();

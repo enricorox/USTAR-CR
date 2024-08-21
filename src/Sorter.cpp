@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <algorithm>
 #include <random>
 #include "Sorter.h"
 #include "commons.h"
@@ -62,26 +61,26 @@ void Sorter::init(const vector<node_t> *dbg_nodes, const vector<bool> *spss_visi
             sort(seed_order.begin(), seed_order.end(), lambda);
             }
             break;
-        case seeding_method_t::LOWER_MEDIAN_ABUNDANCE: {
+        case seeding_method_t::LOWER_MEDIAN_COLOR: {
             auto lambda = [this](size_t a, size_t b) {
-                return nodes->at(a).median_abundance < nodes->at(b).median_abundance;
+                return nodes->at(a).median_color < nodes->at(b).median_color;
                 //return nodes->at(a).abundances.front() + nodes->at(a).abundances.back()  < nodes->at(b).abundances.front() + nodes->at(b).abundances.back();
             };
             sort(seed_order.begin(), seed_order.end(), lambda);
             }
             break;
-        case seeding_method_t::SIMILAR_ABUNDANCE:
+        case seeding_method_t::SIMILAR_COLORS:
             // no break here
-        case seeding_method_t::LOWER_AVERAGE_ABUNDANCE: {
+        case seeding_method_t::LOWER_AVERAGE_COLOR: {
                 auto lambda = [this](size_t a, size_t b) {
-                    return nodes->at(a).average_abundance < nodes->at(b).average_abundance;
+                    return nodes->at(a).average_color < nodes->at(b).average_color;
                 };
                 sort(seed_order.begin(), seed_order.end(), lambda);
             }
             break;
-        case seeding_method_t::HIGHER_AVERAGE_ABUNDANCE: {
+        case seeding_method_t::HIGHER_AVERAGE_COLOR: {
                 auto lambda = [this](size_t a, size_t b) {
-                    return nodes->at(a).average_abundance > nodes->at(b).average_abundance;
+                    return nodes->at(a).average_color > nodes->at(b).average_color;
                 };
                 sort(seed_order.begin(), seed_order.end(), lambda);
             }
@@ -140,16 +139,16 @@ size_t Sorter::next_seed() {
         cerr << "next_seed(): No seed available!" << endl;
         exit(EXIT_FAILURE);
     }
-    if(seeding_method == seeding_method_t::SIMILAR_ABUNDANCE){
+    if(seeding_method == seeding_method_t::SIMILAR_COLORS){
         if(first_node){
             first_node = false;
             return seed_order[seed_index];
         }
         size_t best = seed_index;
-        auto d_best = d((*nodes)[last_node].median_abundance , (*nodes)[seed_order[best]].median_abundance);
+        auto d_best = d((*nodes)[last_node].median_color , (*nodes)[seed_order[best]].median_color);
         for(size_t i = seed_index; i < seed_order.size(); i++)
             if(!(*visited)[seed_order[i]]){
-                auto d_i = d((*nodes)[last_node].median_abundance , (*nodes)[seed_order[i]].median_abundance);
+                auto d_i = d((*nodes)[last_node].median_color, (*nodes)[seed_order[i]].median_color);
                 if(d_i < d_best)
                     best = i;
                 if(d_i < EPSILON)
@@ -234,17 +233,17 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
                 }
             }
             break;
-        case extending_method_t::SIMILAR_MEDIAN_ABUNDANCE:
+        case extending_method_t::SIMILAR_MEDIAN_COLOR:
             {
                 auto best_value = UINT32_MAX;
                 for(size_t i = 0; i < to_nodes.size(); i++){
-                    auto ab_seed = nodes->at(seed).median_abundance;
-                    auto ab_succ = nodes->at(to_nodes.at(i)).median_abundance;
+                    auto ab_seed = nodes->at(seed).median_color;
+                    auto ab_succ = nodes->at(to_nodes.at(i)).median_color;
 
                     // compute the distance
                     auto diff = d(ab_seed, ab_succ);
 
-                    if(diff == 0){ // same abundance!
+                    if(diff == 0){ // same color!
                         best = i;
                         break;
                     }
@@ -255,12 +254,12 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
                 }
             }
             break;
-        case extending_method_t::LOWER_MEDIAN_ABUNDANCE:{
-                uint32_t min_ab = UINT32_MAX;
+        case extending_method_t::LOWER_MEDIAN_COLOR:{
+                uint32_t min_col = UINT32_MAX;
                 for (size_t i = 0; i < to_nodes.size(); i++) {
-                    auto ab = (*nodes)[to_nodes[i]].median_abundance;
-                    if (ab < min_ab) {
-                        min_ab = ab;
+                    auto ab = (*nodes)[to_nodes[i]].median_color;
+                    if (ab < min_col) {
+                        min_col = ab;
                         best = i;
                     }
                 }
