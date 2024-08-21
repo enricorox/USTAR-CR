@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <random>
+#include <algorithm>
 #include "Sorter.h"
 #include "commons.h"
 
