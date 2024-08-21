@@ -270,13 +270,13 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
 
     // compute graph parameters
     size_t sum_unitig_length = 0;
-    double sum_abundances = 0;
+    double sum_colors = 0;
     for(const auto &node : nodes) {
         n_arcs += node.arcs.size();
         // n_kmers += node.abundances.size();
         n_kmers += node.colors.size();
         sum_unitig_length += node.length;
-        sum_abundances += node.average_abundance * (double) node.abundances.size();
+        sum_colors += node.average_color * (double) node.colors.size();
 
         if(node.arcs.empty()) n_iso++;
 
@@ -294,7 +294,7 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
             n_sources++;
     }
     avg_unitig_len = (double) sum_unitig_length / (double) nodes.size();
-    avg_abundances = sum_abundances / (double) n_kmers;
+    avg_colors = sum_colors / (double) n_kmers;
 }
 
 DBG::~DBG() = default;
@@ -310,7 +310,7 @@ void DBG::print_stat() {
     cout << "   number of arcs:             " << n_arcs << "\n";
     cout << "   graph density:              " << double (n_arcs) / double (8 * nodes.size()) * 100 << "%\n";
     cout << "   average unitig length:      " << avg_unitig_len << "\n";
-    cout << "   average abundances:         " << avg_abundances << "\n";
+    cout << "   average color:              " << avg_colors << "\n";
     cout << "\n";
 }
 

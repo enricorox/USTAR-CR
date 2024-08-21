@@ -44,7 +44,7 @@ class DBG{
     size_t n_arcs = 0;
     size_t n_kmers = 0;
     double avg_unitig_len = 0;
-    double avg_abundances = 0;
+    double avg_colors = 0;
     bool debug;
 
     /**

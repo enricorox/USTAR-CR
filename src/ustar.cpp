@@ -60,10 +60,10 @@ void print_help(const params_t &params){
     cout << "   -s  seeding method [" << inv_map<seeding_method_t>(seeding_method_names, params.seeding_method) << "]\n";
     cout << "       f               choose the first seed available\n";
     cout << "       r               choose a random seed\n";
-    cout << "       -ma             choose the seed with lower median abundance\n";
-    cout << "       +aa             choose the seed with higher average abundance\n";
-    cout << "       -aa             choose the seed with lower average abundance\n";
-    cout << "       =a              choose the seed with most similar abundance to the last selected node\n";
+    cout << "       -ma             choose the seed with lower median color\n";
+    cout << "       +aa             choose the seed with higher average color\n";
+    cout << "       -aa             choose the seed with lower average color\n";
+    cout << "       =a              choose the seed with most similar color to the last selected node\n";
     cout << "       -l              choose the seed with smaller length\n";
     cout << "       +l              choose the seed with bigger length\n";
     cout << "       -c              choose the seed with less arcs\n";
@@ -75,9 +75,9 @@ void print_help(const params_t &params){
     cout << "   -x  extending method [" << inv_map<extending_method_t>(extending_method_names, params.extending_method) << "]\n";
     cout << "       f               choose the first successor available\n";
     cout << "       r               choose a random successor\n";
-    cout << "       =a              choose the successor with most similar abundance to the last selected node\n";
-    cout << "       =ma             choose the successor with most similar median abundance to the last selected node\n";
-    cout << "       -ma             choose the successor with lower abundance to the last selected node\n";
+    cout << "       =a              choose the successor with most similar color to the last selected node\n";
+    cout << "       =ma             choose the successor with most similar median color to the last selected node\n";
+    cout << "       -ma             choose the successor with lower color to the last selected node\n";
     cout << "       -l              choose the successor with smaller length\n";
     cout << "       +l              choose the successor with bigger length\n";
     cout << "       -c              choose the successor with less arcs\n";
