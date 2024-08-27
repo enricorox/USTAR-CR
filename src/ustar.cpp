@@ -76,6 +76,9 @@ void print_help(const params_t &params){
     cout << "       f               choose the first successor available\n";
     cout << "       r               choose a random successor\n";
     cout << "       =a              choose the successor with most similar color to the last selected node\n";
+    cout << "                       with precedence to the less connected one\n";
+    cout << "       =A              choose the successor with the same color to the last selected node\n";
+    cout << "                       otherwise the less connected one\n";
     cout << "       =ma             choose the successor with most similar median color to the last selected node\n";
     cout << "       -ma             choose the successor with lower color to the last selected node\n";
     cout << "       -l              choose the successor with smaller length\n";

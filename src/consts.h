@@ -59,6 +59,7 @@ const map<string, extending_method_t> extending_method_names = {
         {"f", extending_method_t::FIRST},
         {"r", extending_method_t::RANDOM},
         {"=a", extending_method_t::SIMILAR_COLOR},
+        {"=A", extending_method_t::SIMILAR_COLOR1},
         {"=ma", extending_method_t::SIMILAR_MEDIAN_COLOR},
         {"-l", extending_method_t::SMALLER_LENGTH},
         {"-ma", extending_method_t::LOWER_MEDIAN_COLOR},
