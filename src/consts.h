@@ -51,7 +51,8 @@ enum class extending_method_t{
     BIGGER_LENGTH,
     SMALLER_LENGTH,
     MORE_CONNECTED,
-    LESS_CONNECTED
+    LESS_CONNECTED,
+    SIMILAR_COLOR1
 };
 
 const map<string, extending_method_t> extending_method_names = {
