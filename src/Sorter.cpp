@@ -209,13 +209,32 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
         case extending_method_t::FIRST: // choose always the first
             // do nothing, it's before the cycle
             break;
+//        case extending_method_t::SIMILAR_COLOR: {
+//                uint32_t best_value = UINT32_MAX;
+//                for(size_t i = 0; i < to_nodes.size(); i++){
+//                    uint32_t col_seed = nodes->at(seed).colors.back();
+//                    uint32_t col_succ = nodes->at(to_nodes.at(i)).colors.front();
+//
+//                    if(!forward)
+//                        col_seed = nodes->at(seed).colors.front();
+//                    if(!to_forwards.at(i))
+//                        col_succ = nodes->at(to_nodes.at(i)).colors.back();
+//
+//                    // compute the distance
+//                    uint32_t diff = d(col_seed, col_succ);
+//
+//                    if(diff == 0){ // same abundance!
+//                        best = i;
+//                        break;
+//                    }
+//                    if(diff < best_value){
+//                        best_value = diff;
+//                        best = i;
+//                    }
+//                }
+//            }
+//            break;
         case extending_method_t::SIMILAR_COLOR: {
-                sort(to_nodes.begin(), to_nodes.end(),
-                     [&remaining_nodes, &to_nodes, &to_forwards](uint32_t  a, uint32_t b){
-                         return remaining_nodes(to_nodes[a], to_forwards[a]) < remaining_nodes(to_nodes[b], to_forwards[b]);
-                     }
-                );
-
                 uint32_t best_value = UINT32_MAX;
                 for(size_t i = 0; i < to_nodes.size(); i++){
                     uint32_t col_seed = nodes->at(seed).colors.back();
@@ -229,10 +248,13 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
                     // compute the distance
                     uint32_t diff = d(col_seed, col_succ);
 
-                    if(diff == 0){ // same abundance!
-                        best = i;
-                        break;
+                    if(diff == best){ // same abundance!
+                        int rn_best = remaining_nodes(to_nodes[best], to_forwards[best]);
+                        int rn_i = remaining_nodes(to_nodes[i], to_forwards[i]);
+                        if (rn_i < rn_best)
+                            best = i;
                     }
+
                     if(diff < best_value){
                         best_value = diff;
                         best = i;
@@ -241,12 +263,6 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
             }
             break;
         case extending_method_t::SIMILAR_COLOR1: {
-                sort(to_nodes.begin(), to_nodes.end(),
-                     [&remaining_nodes, &to_nodes, &to_forwards](uint32_t  a, uint32_t b){
-                         return remaining_nodes(to_nodes[a], to_forwards[a]) < remaining_nodes(to_nodes[b], to_forwards[b]);
-                     }
-                );
-
                 uint32_t best_value = UINT32_MAX;
                 bool found = false;
                 for(size_t i = 0; i < to_nodes.size(); i++){
@@ -271,8 +287,17 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
                         best = i;
                     }
                 }
-                if(!found)
-                    best = to_nodes[0];
+                if(!found){
+                    min_conn = INT32_MAX;
+                    for(size_t i = 0; i < to_nodes.size(); i++){
+                        int rn = remaining_nodes(to_nodes[i], to_forwards[i]);
+                        if(rn < min_conn) {
+                            min_conn = rn;
+                            best = i;
+                        }
+                    }
+                }
+
             }
             break;
         case extending_method_t::SIMILAR_MEDIAN_COLOR:
