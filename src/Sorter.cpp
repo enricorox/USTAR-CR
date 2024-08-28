@@ -248,7 +248,7 @@ size_t Sorter::next_successor(node_idx_t seed, bool forward, vector<node_idx_t> 
                     // compute the distance
                     uint32_t diff = d(col_seed, col_succ);
 
-                    if(diff == best){ // same abundance!
+                    if(diff == best_value){ // same abundance!
                         int rn_best = remaining_nodes(to_nodes[best], to_forwards[best]);
                         int rn_i = remaining_nodes(to_nodes[i], to_forwards[i]);
                         if (rn_i < rn_best)
