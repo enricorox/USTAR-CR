@@ -39,3 +39,4 @@ add_executable(ustars
         src/ustars.cpp
         src/Analyzer.cpp
         )
+add_executable(explode-rle src/exploderle.cpp)
