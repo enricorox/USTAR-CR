@@ -1,6 +1,6 @@
-# USTAR2 (Unitig STitch Advanced constRuction)
+# USTAR3 (Unitig STitch Advanced constRuction)
 ## Overview
-USTAR2 is a k-mers set compressor, with counting.
+USTAR3 is a k-mers set compressor, with colors.
 
 It is based on the ideas of [UST](https://github.com/medvedevgroup/UST) 
 and [prophAsm](https://github.com/prophyle/prophasm) 
@@ -17,7 +17,7 @@ You will find four executables and one bash script:
 
 ## Dependencies
 There are no dependencies. 
-However, you'll need [BCALM2](https://github.com/GATB/bcalm) 
+However, you'll need [GGCAT](https://github.com/algbio/ggcat) 
 in order to compute a compacted de Bruijn graph (cdBG) of your multi-fasta file.
 
 ## How to download and compile
@@ -26,13 +26,13 @@ in order to compute a compacted de Bruijn graph (cdBG) of your multi-fasta file.
 * `cmake . && make -j 4`.
 
 ## How to run USTAR2
-Run BCALM2 first: 
-* `./bcalm -kmer-size <kmer-size> -in <your-multi-fasta> -all-abundance-colors`
+Run GGCAT first: 
+* `./GGCAT -k <kmer-size> -e -c <your-multi-fasta> 
 
-Then USTAR2:
-* `./ustar -k <kmer-size> -i <bcalm-output>`
+Then USTAR3:
+* `./ustar -k <kmer-size> -i <GGCAT-output>`
 
-To use the best heuristic, add `-s+aa -x+u`
+To use the best heuristic, wait a little bit :)
 
 See the help `./ustar -h` for details and advanced options.
 
