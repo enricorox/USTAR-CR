@@ -305,14 +305,14 @@ void Encoder::compute_avg() {
     // pre-allocate the vector
     avg_counts.reserve(simplitigs_colors->size());
 
-    for(auto &simplitig_counts : *simplitigs_colors){
+    for(auto &simplitig_colors : *simplitigs_colors){
         if(encoding == encoding_t::AVG_RLE) {
             double sum = 0;
-            for (uint32_t c: simplitig_counts)
+            for (uint32_t c: simplitig_colors)
                 sum += c;
-            avg_counts.push_back(sum / (double) simplitig_counts.size());
+            avg_counts.push_back(sum / (double) simplitig_colors.size());
         } else
-            avg_counts.push_back((double) (simplitig_counts.front() + simplitig_counts.back()) / 2);
+            avg_counts.push_back((double) (simplitig_colors.front() + simplitig_colors.back()) / 2);
     }
 
 }
