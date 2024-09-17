@@ -213,6 +213,8 @@ void Encoder::encode(encoding_t encoding_type) {
             do_flip();
             do_RLE();
             break;
+        case encoding_t::GRAPH_RLE:
+            break;
         case encoding_t::FLIP_RLE:
             do_flip();
             do_RLE();
