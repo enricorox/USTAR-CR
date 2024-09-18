@@ -324,6 +324,11 @@ void SPSS::extract_simplitigs_and_colors(){
     }
 }
 
+void SPSS::get_path_cover(vector<vector<node_idx_t >> &path_cover, vector<vector<bool>> &path_cover_orientations){
+    path_cover = SPSS::path_cover_nodes;
+    path_cover_orientations = SPSS::path_cover_forwards;
+}
+
 void SPSS::print_stats(){
     if(n_simplitigs == 0){
         cerr << "print_stats(): Need to extract simplitigs first!" << endl;
