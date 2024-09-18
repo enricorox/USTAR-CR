@@ -214,6 +214,7 @@ void Encoder::encode(encoding_t encoding_type) {
             do_RLE();
             break;
         case encoding_t::GRAPH_RLE:
+            DBG graph = DBG(*simplitigs, *simplitigs_colors);
             break;
         case encoding_t::FLIP_RLE:
             do_flip();

@@ -70,6 +70,8 @@ public:
      */
     DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug=false);
 
+    DBG(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors, bool debug=false);
+
     ~DBG();
 
     /**
@@ -162,6 +164,10 @@ public:
     void parse_ggcat_file();
 
     void to_ggcat_file(const string &file_name);
+
+    void compute_graph_parameters();
+
+    void build_colors_graph(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors);
 };
 
 #endif //USTAR_DBG_H

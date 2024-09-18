@@ -269,6 +269,85 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
     parse_ggcat_file();
 
     // compute graph parameters
+    compute_graph_parameters();
+}
+
+DBG::DBG(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors, bool debug){
+    this->bcalm_file_name = "NULL";
+
+    // induced by parameters
+    this->kmer_size = simplitigs[0].length() - simplitigs_colors[0].size() + 1;
+
+    this->debug = debug;
+
+    // build the graph
+    build_colors_graph(simplitigs, simplitigs_colors);
+
+    // compute graph parameters
+    compute_graph_parameters();
+}
+
+void DBG::build_colors_graph(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors){
+    // build incident matrix
+    map<uint32_t,vector<uint32_t>> color_map_front;
+    map<uint32_t,vector<uint32_t>> color_map_back;
+    size_t idx = 0;
+    for(const auto &node_colors: simplitigs_colors){
+        color_map_front[node_colors.front()].push_back(idx);
+        color_map_back[node_colors.back()].push_back(idx);
+        idx++;
+    }
+
+    // build adjacency matrix
+    for(idx = 0; idx < simplitigs.size(); idx++){
+        node_t node;
+
+        // TODO do I really need these?
+        node.unitig = simplitigs[idx];
+        node.length = simplitigs[idx].length();
+        node.colors = simplitigs_colors[idx];
+
+        auto back_color = simplitigs_colors[idx].back();    // -------C
+        auto front_color = simplitigs_colors[idx].front();  // C-------
+
+        // arcs +:-
+        for(auto succ: color_map_back[back_color]){
+            arc_t arc{};
+            arc.successor = succ;
+            arc.forward = true;
+            arc.to_forward = false;
+            node.arcs.push_back(arc);
+        }
+        // arcs +:+
+        for(auto succ: color_map_front[back_color]){
+            arc_t arc{};
+            arc.successor = succ;
+            arc.forward = true;
+            arc.to_forward = true;
+            node.arcs.push_back(arc);
+        }
+        // arcs -:-
+        for(auto succ: color_map_back[front_color]){
+            arc_t arc{};
+            arc.successor = succ;
+            arc.forward = false;
+            arc.to_forward = false;
+            node.arcs.push_back(arc);
+        }
+        // arcs -:+
+        for(auto succ: color_map_front[front_color]){
+            arc_t arc{};
+            arc.successor = succ;
+            arc.forward = false;
+            arc.to_forward = true;
+            node.arcs.push_back(arc);
+        }
+        nodes.push_back(node);
+    }
+
+}
+
+void DBG::compute_graph_parameters(){
     size_t sum_unitig_length = 0;
     double sum_colors = 0;
     for(const auto &node : nodes) {
