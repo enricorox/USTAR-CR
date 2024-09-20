@@ -168,6 +168,10 @@ public:
     void compute_graph_parameters();
 
     void build_colors_graph(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors);
+
+    string spell(const node_idx_t path_nodes, const bool forwards);
+
+    void get_colors(const node_idx_t path_nodes, const bool forwards, vector<uint32_t> &colors);
 };
 
 #endif //USTAR_DBG_H

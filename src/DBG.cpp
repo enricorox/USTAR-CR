@@ -602,6 +602,29 @@ string DBG::spell(const vector<node_idx_t> &path_nodes, const vector<bool> &forw
     return contig;
 }
 
+string DBG::spell(const node_idx_t path_nodes, const bool forwards) {
+    string contig;
+    // first node as a seed
+    if(forwards)
+        contig = nodes.at(path_nodes).unitig;
+    else
+        contig = reverse_complement(nodes.at(path_nodes).unitig);
+    return contig;
+}
+
+void DBG::get_colors(const node_idx_t path_nodes, const bool forwards, vector<uint32_t> &colors) {
+    //          3 5
+    // forward: A C T T
+    //          5 3
+    // rev-com: A A G T
+    if (forwards) // read forward
+        for(uint32_t color : nodes.at(path_nodes).colors)
+            colors.push_back(color);
+    else // read backward
+        for(int k = int (nodes.at(path_nodes).colors.size() - 1); k > -1; k--)
+            colors.push_back(nodes.at(path_nodes).colors[k]);
+}
+
 void DBG::get_colors(const vector<node_idx_t> &path_nodes, const vector<bool> &forwards, vector<uint32_t> &colors) {
     //          3 5
     // forward: A C T T
