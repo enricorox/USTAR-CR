@@ -61,5 +61,10 @@ public:
     size_t compute_contig_length(const vector<node_idx_t>& nodes);
 
     void get_path_cover(vector<vector<node_idx_t>> &path_cover, vector<vector<bool>> &path_cover_orientations);
+
+    void extract_sequences_and_colors();
+
+    const vector<string> *get_sequences();
+
 };
 #endif //USTAR_SPSS_H

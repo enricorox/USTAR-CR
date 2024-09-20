@@ -324,6 +324,12 @@ void SPSS::extract_simplitigs_and_colors(){
     }
 }
 
+/**
+ * Return the path cover computed by USTAR
+ * @param path_cover vector of paths represented by vectors of nodes
+ * @param path_cover_orientations vector of bits indicating the orientation of single nodes
+ */
+
 void SPSS::get_path_cover(vector<vector<node_idx_t >> &path_cover, vector<vector<bool>> &path_cover_orientations){
     path_cover = SPSS::path_cover_nodes;
     path_cover_orientations = SPSS::path_cover_forwards;
@@ -347,9 +353,35 @@ void SPSS::print_stats(){
     cout << "   cumulative length (CL):                 " << c_length << "\n";
     cout << "   nucleotide per kmer:                    " << (double) c_length / (double) dbg->get_n_kmers() << "\n";
     cout << "   average simplitigs length:              " << (double) c_length / (double) n_simplitigs << "\n";
-    cout << "\n";
+    cout << endl;
 }
 
 size_t SPSS::get_score() {
     return path_cover_nodes.size();
+}
+
+void SPSS::extract_sequences_and_colors(){
+    n_simplitigs = path_cover_nodes.size();
+    if(n_simplitigs == 0){
+        cerr << "extract_sequences_and_colors(): Need to compute a path cover first!" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    vector<uint32_t> simplitig_colors;
+    colors.reserve(n_simplitigs);
+    for(size_t i = 0; i < n_simplitigs; i++){
+        // extract sequences
+        for(size_t j = 0; j < path_cover_nodes[i].size(); j++) {
+            simplitigs.push_back(dbg->spell(path_cover_nodes[i][j], path_cover_forwards[i][j]));
+
+            // extract simplitigs_colors
+            simplitig_colors.clear();
+            dbg->get_colors(path_cover_nodes[i][j], path_cover_forwards[i][j], simplitig_colors);
+            colors.push_back(simplitig_colors);
+        }
+    }
+}
+
+const vector<string> *SPSS::get_sequences() {
+    return SPSS::get_simplitigs();
 }
