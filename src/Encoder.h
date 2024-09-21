@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include "consts.h"
+
 using namespace std;
 
 class Encoder{
@@ -21,6 +22,8 @@ class Encoder{
 
     const vector<string> *simplitigs;
     const vector<vector<uint32_t>> *simplitigs_colors;
+    vector<string> simplitigs_aux;
+    vector<vector<uint32_t>> simplitigs_colors_aux;
     size_t n_kmers = 0;
 
     vector<uint32_t> symbols;

@@ -10,6 +10,7 @@
 #include "DBG.h"
 #include "commons.h"
 #include "bwt.hpp"
+#include "SPSS.h"
 
 Encoder::Encoder(const vector<string> *simplitigs, const vector<vector<uint32_t>> *simplitigs_colors, bool debug) {
     if (simplitigs_colors->empty()) {
@@ -40,7 +41,12 @@ void Encoder::to_fasta_file(const string &file_name) {
         cerr << "to_fasta_file(): There are no simplitigs!" << endl;
         exit(EXIT_FAILURE);
     }
-
+    if(debug){
+        if(simplitigs_order.size() != simplitigs->size()) {
+            cerr << "Order vector must be the same size!" << endl;
+            exit(EXIT_FAILURE);
+        }
+    }
     ofstream fasta;
     fasta.open(file_name);
     for(size_t i = 0; i < simplitigs->size(); i++){
@@ -49,6 +55,7 @@ void Encoder::to_fasta_file(const string &file_name) {
         fasta << (flips[i]?DBG::reverse_complement(simplitig):simplitig) << "\n";
     }
     fasta.close();
+    cout << "Done!" << endl;
 }
 
 void Encoder::to_counts_file(const string &file_name) {
@@ -133,6 +140,8 @@ void Encoder::to_colors_file(const string &file_name) {
             // no break here
         case encoding_t::AVG_RLE:
             // no break here
+        case encoding_t::GRAPH_RLE:
+            // no break here
         case encoding_t::RLE:
             for(size_t i = 0; i < symbols.size(); i++){
                 encoded << symbols[i];
@@ -213,8 +222,25 @@ void Encoder::encode(encoding_t encoding_type) {
             do_flip();
             do_RLE();
             break;
-        case encoding_t::GRAPH_RLE:
-            DBG graph = DBG(*simplitigs, *simplitigs_colors);
+        case encoding_t::GRAPH_RLE: {
+            DBG graph(*simplitigs, *simplitigs_colors);
+            Sorter sorter = Sorter(seeding_method_t::MORE_UNBALANCED, extending_method_t::LESS_CONNECTED);
+            SPSS spss = SPSS(&graph, &sorter, 0, false);
+            spss.compute_path_cover();
+            spss.extract_sequences_and_colors();
+
+            // overwrite order!
+            // MEMORY ERROR!
+            // simplitigs = spss.get_sequences());
+            simplitigs_aux = *spss.get_sequences();
+            simplitigs = &simplitigs_aux;
+
+            // MEMORY ERROR!
+            // simplitigs_colors = spss.get_colors();
+            simplitigs_colors_aux = *spss.get_colors();
+            simplitigs_colors = &simplitigs_colors_aux;
+            do_RLE();
+            }
             break;
         case encoding_t::FLIP_RLE:
             do_flip();
@@ -334,6 +360,8 @@ void Encoder::print_stat(){
         case encoding_t::FLIP_RLE:
             // no break here
         case encoding_t::AVG_RLE:
+            // no break here
+        case encoding_t::GRAPH_RLE:
             // no break here
         case encoding_t::RLE:
             cout << "   Number of runs: " << runs.size() << "\n";
