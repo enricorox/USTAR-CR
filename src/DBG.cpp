@@ -292,17 +292,19 @@ void DBG::build_colors_graph(const vector<string> &simplitigs, const vector<vect
     map<uint32_t,vector<uint32_t>> color_map_front;
     map<uint32_t,vector<uint32_t>> color_map_back;
     size_t idx = 0;
+    cout << "Building edge maps..." << endl;
     for(const auto &node_colors: simplitigs_colors){
         color_map_front[node_colors.front()].push_back(idx);
         color_map_back[node_colors.back()].push_back(idx);
         idx++;
     }
 
-    // build adjacency matrix
+    cout << "Building adjacency list..." << endl;
+    nodes.reserve(simplitigs.size());
     for(idx = 0; idx < simplitigs.size(); idx++){
         node_t node;
 
-        // TODO do I really need these?
+        // TODO do I really need these? YEP
         node.unitig = simplitigs[idx];
         node.length = simplitigs[idx].length();
         node.colors = simplitigs_colors[idx];
@@ -344,6 +346,7 @@ void DBG::build_colors_graph(const vector<string> &simplitigs, const vector<vect
         }
         nodes.push_back(node);
     }
+    cout << "Done." << endl;
 
 }
 
