@@ -60,8 +60,7 @@ int main(int argc, char **argv){
 
     ColorGraph cg = ColorGraph(params.sequences_file_name, params.colors_file_name, params.kmer_length);
 
-    cg.write_cover(params.output_file_name + ".fa", params.output_file_name + ".rleo.colors");
+    cg.write_cover(params.output_file_name + ".rleo.fa", params.output_file_name + ".rleo.colors");
 
-    cout << "AAG --> " << reverse_complement("AAG") << endl;
     return EXIT_SUCCESS;
 }
