@@ -304,7 +304,6 @@ void DBG::build_colors_graph(const vector<string> &simplitigs, const vector<vect
     for(idx = 0; idx < simplitigs.size(); idx++){
         node_t node;
 
-        // TODO do I really need these? YEP
         node.unitig = simplitigs[idx];
         node.length = simplitigs[idx].length();
         node.colors = simplitigs_colors[idx];
@@ -447,7 +446,7 @@ string DBG::reverse_complement(const string &s) {
                 c = 'C';
                 break;
             default:
-                cerr << "reverse_complement(): Unknown nucleotide!" << endl;
+                cerr << "complement(): Unknown nucleotide!" << endl;
                 exit(EXIT_FAILURE);
         }
         rc[s.length() - 1 - i] = c;
