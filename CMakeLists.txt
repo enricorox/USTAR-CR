@@ -4,7 +4,7 @@ project(USTAR)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
-#add_compile_options(-O0 -W)
+#add_compile_options(-O0 -Wall -Werror)
 add_compile_options(-O3 -W)
 
 add_executable(ustar
@@ -39,4 +39,9 @@ add_executable(ustars
         src/ustars.cpp
         src/Analyzer.cpp
         )
+
 add_executable(explode-rle src/exploderle.cpp)
+
+add_executable(optimize-rle src/optimize-rle.cpp
+        src/ColorGraph.cpp
+        src/ColorGraph.cpp)
