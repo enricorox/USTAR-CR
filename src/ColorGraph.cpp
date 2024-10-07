@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
-#include <sstream>
+#include <algorithm> // fix compilation on the server
 
 using namespace std;
 
