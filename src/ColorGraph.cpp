@@ -144,7 +144,9 @@ void ColorGraph::build_graph() {
         node_id++;
     }
     if(tot_kmers != static_cast<long>(colors.size())){
-        cerr << "Error build_graph(): wrong number of colors" << endl;
+        cerr    << "Error build_graph(): wrong number of colors\n"
+                << "    tot_kmers = " << tot_kmers << "\n"
+                << "    colors.size() = " << colors.size() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -177,9 +179,9 @@ std::vector<color_id_t> ColorGraph::decode_RLE_colors() {
         if(pos == string::npos) // value
             count = 1;
         else // value:count
-            count = stol(line.substr(pos + 1, string::npos));
+            count = stoul(line.substr(pos + 1, string::npos));
 
-        value = stol(line.substr(0, pos));
+        value = stoul(line.substr(0, pos));
 
         for(ulong i = 0; i < count; i++){
             colors.push_back(value);
