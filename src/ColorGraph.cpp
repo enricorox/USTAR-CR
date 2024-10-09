@@ -136,13 +136,13 @@ void ColorGraph::build_graph() {
 
         // extract info
         long length = static_cast<long>(line.size());
-        long n_kmer = length - kmer_length + 1;
 
-        if(n_kmer < 1){
+        if(length < kmer_length){
             cerr << "Error build_graph(): sequence too short!" << endl;
             exit(EXIT_FAILURE);
         }
 
+        long n_kmer = length - kmer_length + 1;
         vector<color_id_t> sequence_colors = vector(colors.begin() + tot_kmers, colors.begin() + tot_kmers + n_kmer);
 
         // add node to the graph
