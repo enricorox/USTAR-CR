@@ -82,6 +82,11 @@ ColorGraph::ColorGraph(std::string sequences_file_name, std::string colors_file_
     this->colors_file_name = std::move(colors_file_name);
     this->kmer_length = kmer_length;
 
+    if(kmer_length < 3){
+        cerr << "Error ColorGraph(): kmer_length must be at least 3" << endl;
+        exit(EXIT_FAILURE);
+    }
+
     cout << "* Building the graph..." << endl;
     build_graph();
     print_stats();

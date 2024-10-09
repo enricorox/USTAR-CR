@@ -46,11 +46,15 @@ params_t parse_args(int argc, char **argv){
                 print_help();
                 exit(EXIT_FAILURE);
         }
-        // checking params
-        if(params.output_file_name.empty()){
-            params.output_file_name = "out";
-            cerr << "WARN: using default output basename: " << params.output_file_name << endl;
-        }
+    }
+    // checking params
+    if(params.output_file_name.empty()){
+        params.output_file_name = "out";
+        cerr << "WARN: using default output basename: " << params.output_file_name << endl;
+    }
+    if(params.kmer_length == 0){
+        params.kmer_length = 31;
+        cerr << "WARN: using default kmer-length: " << params.kmer_length << endl;
     }
     return params;
 }
