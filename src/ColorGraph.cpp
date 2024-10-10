@@ -267,7 +267,8 @@ void ColorGraph::write_cover(std::string sequences_filename, std::string colors_
 
    assert(values.size() == counts.size());
 
-    cout << "** Writing colors to " << colors_filename << endl;
+    cout << "** Writing colors to " << colors_filename << "\n";
+    cout << "       number of runs: " << counts.size() << endl;
     ofstream colors_file(colors_filename);
     for(size_t i = 0; i < values.size(); i++) {
         colors_file << values[i]; // value (only for 1-runs)
