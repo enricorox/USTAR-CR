@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 
 typedef unsigned long node_id_t;
 typedef unsigned long color_id_t;
@@ -85,9 +86,9 @@ private:
     std::map<node_id_t, Node> nodes;
 
     // nodes_head[3] contains all the nodes with 3 in the head: [3--->
-    std::map<color_id_t, std::vector<node_id_t>> nodes_head;
+    std::map<color_id_t, std::list<node_id_t>> nodes_head;
     // nodes_tail[3] contains all the nodes with 3 in the tail: [---3>
-    std::map<color_id_t, std::vector<node_id_t>> nodes_tail;
+    std::map<color_id_t, std::list<node_id_t>> nodes_tail;
 
     std::vector<Path> paths;
 

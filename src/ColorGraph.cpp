@@ -207,10 +207,10 @@ bool ColorGraph::has_next(Path path) {
     for(size_t i = 0; i < max_attempts; i++) {
         // search in nodes heads (direct)
         if (!nodes_head[color].empty()) {
-            next_node = nodes_head[color][0]; // [C----->
+            next_node = nodes_head[color].front(); // [C----->
 
             if (nodes[next_node].is_visited()) { // break loops (and auto-loops)!
-                nodes_head[color].erase(nodes_head[color].begin());
+                nodes_head[color].pop_front();
                 continue;
                 // return has_next(path);
             }
@@ -221,10 +221,10 @@ bool ColorGraph::has_next(Path path) {
 
         // search in nodes tails (reverse)
         if (!nodes_tail[color].empty()) {
-            next_node = nodes_tail[color][0];
+            next_node = nodes_tail[color].front();
 
             if (nodes[next_node].is_visited()) { // break loops (and auto-loops)!
-                nodes_tail[color].erase(nodes_tail[color].begin());
+                nodes_tail[color].pop_front();
                 continue;
                 // return has_next(path);
             }
