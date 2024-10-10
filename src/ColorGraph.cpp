@@ -8,6 +8,7 @@
 #include <fstream>
 #include <utility>
 #include <algorithm> // fix compilation on the server
+#include <cassert>
 
 using namespace std;
 
@@ -27,22 +28,6 @@ inline char complement(char c){
         default: return 'N';
     }
 }
-
-/*
-std::string reverse_complement(std::string sequence){
-    if(sequence.length() == 1) return sequence = reverse_complement(sequence[0]);
-
-    auto length = sequence.length();
-    auto half = length / 2;
-
-    for(size_t i = 0; i <= half -.1; i++) {
-        char t = sequence[i];
-        sequence[i] = reverse_complement(sequence[length - 1 - i]);
-        sequence[length - 1 - i] = complement(t);
-    }
-    return sequence;
-}
-*/
 
 std::string reverse_complement(std::string sequence){
     for(auto &c: sequence) c = complement(c);
@@ -99,10 +84,15 @@ void ColorGraph::compute_path_cover() {
     for(auto& node: nodes){
         auto &seed = node.second;
         auto seed_id = node.first;
+
+        // skip visited nodes
         if(seed.is_visited())
             continue;
+
+        // visit the node and build a path
         seed.visit();
         Path path(seed_id);
+
         // extend direct
         while(has_next(path))
             path.extend(next(path));
@@ -112,6 +102,7 @@ void ColorGraph::compute_path_cover() {
         while(has_next(path))
             path.extend(next(path));
 
+        // collect paths
         paths.push_back(path);
     }
 }
@@ -204,36 +195,51 @@ std::vector<color_id_t> ColorGraph::decode_RLE_colors() {
 bool ColorGraph::has_next(Path path) {
     color_id_t color;
     auto tail = path.get_tail_node_id();
+
+    // check tail orientation and get the correct color
     if(path.get_tail_orientation() == orientation_t::direct)
         color = nodes[tail].colors.back();
     else
         color = nodes[tail].colors.front();
 
-    // search in nodes heads (direct)
-    if(!nodes_head[color].empty()){
-        next_node = nodes_head[color][0];
+    // start searching
+    size_t max_attempts = nodes.size();
+    for(size_t i = 0; i < max_attempts; i++) {
+        // search in nodes heads (direct)
+        if (!nodes_head[color].empty()) {
+            next_node = nodes_head[color][0]; // [C----->
 
-        if(nodes[next_node].is_visited()){ // break loops (and auto-loops)!
-            nodes_head[color].erase(nodes_head[color].begin());
-            return has_next(path);
+            if (nodes[next_node].is_visited()) { // break loops (and auto-loops)!
+                nodes_head[color].erase(nodes_head[color].begin());
+                continue;
+                // return has_next(path);
+            }
+
+            next_orientation = orientation_t::direct;
+            return true;
         }
 
-        next_orientation = orientation_t::direct;
-        return true;
-    }
-    // search in nodes tails (reverse)
-    if(!nodes_tail[color].empty()){
-        next_node = nodes_tail[color][0];
+        // search in nodes tails (reverse)
+        if (!nodes_tail[color].empty()) {
+            next_node = nodes_tail[color][0];
 
-        if(nodes[next_node].is_visited()){ // break loops (and auto-loops)!
-            nodes_tail[color].erase(nodes_tail[color].begin());
-            return has_next(path);
+            if (nodes[next_node].is_visited()) { // break loops (and auto-loops)!
+                nodes_tail[color].erase(nodes_tail[color].begin());
+                continue;
+                // return has_next(path);
+            }
+
+            next_orientation = orientation_t::reverse;
+            return true;
         }
 
-        next_orientation = orientation_t::reverse;
-        return true;
+        // no colors
+        return false;
     }
-    return false;
+
+    cerr << "Warning has_next(): max attempts reached!" << endl;
+
+    return false; // should not reach here
 }
 
 // undefined behavior if has_next() is not called before
@@ -258,6 +264,8 @@ void ColorGraph::write_cover(std::string sequences_filename, std::string colors_
             sequences_file << node.sequence << "\n";
         }
     }
+
+   assert(values.size() == counts.size());
 
     cout << "** Writing colors to " << colors_filename << endl;
     ofstream colors_file(colors_filename);
