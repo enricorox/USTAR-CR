@@ -35,7 +35,7 @@ params_t parse_args(int argc, char **argv){
                 params.kmer_length = stoi(optarg);
                 break;
             case 'o':
-                params.output_file_name = stoi(optarg);
+                params.output_file_name = optarg;
                 break;
             case '?':
                 cerr << "Error parse_args(): Missing argument" << endl;
