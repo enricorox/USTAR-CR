@@ -261,7 +261,7 @@ void ColorGraph::write_cover(std::string sequences_filename, std::string colors_
             if(path.get_n_orientation(i) == orientation_t::reverse)
                 node.reverse();
             encode_RLE(node.colors, values, counts);
-            sequences_file << node.sequence << "\n";
+            sequences_file << ">\n" << node.sequence << "\n";
         }
     }
 
