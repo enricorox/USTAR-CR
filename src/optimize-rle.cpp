@@ -65,8 +65,7 @@ int main(int argc, char **argv){
     // ColorGraph cg = ColorGraph(params.sequences_file_name, params.colors_file_name, params.kmer_length);
 
     ColorGraph cg = ColorGraph(vector<string>{"AAAC", "AAG", "ATT", "CCCC", "TTTT"},
-                               vector<vector<node_id_t>>{{0, 1}, {0}, {1}, {0, 1}, {2, 2}},
-                               3);
+                               vector<vector<node_id_t>>{{0, 1}, {0}, {1}, {0, 1}, {2, 2}});
 
     cg.write_cover(params.output_file_name + ".rleo.fa", params.output_file_name + ".rleo.colors");
 

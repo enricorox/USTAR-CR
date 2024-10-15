@@ -282,6 +282,8 @@ ColorGraph::ColorGraph(const std::vector<std::string>& sequences, const std::vec
                        int kmer_length) {
     this->sequences_file_name = "tmp";
     this->colors_file_name = "tmp";
+    if(kmer_length == 0) // not given, estimate it
+        kmer_length = sequences[0].length() - colors[0].size() + 1;
     this->kmer_length = kmer_length;
 
     if(kmer_length < 3){
