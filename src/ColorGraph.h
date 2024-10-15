@@ -94,6 +94,8 @@ private:
 
     void build_graph();
 
+    void build_graph(const std::vector<std::string> &sequences, const std::vector<std::vector<color_id_t>> &colors);
+
     bool has_next(Path path);
 
     oriented_node_t next(Path path);
@@ -106,6 +108,8 @@ private:
 
 public:
     ColorGraph(std::string sequences_file_name, std::string colors_file_name, int kmer_length);
+
+    ColorGraph(const std::vector<std::string>& sequences, const std::vector<std::vector<color_id_t>>& colors, int kmer_length);
 
     void write_cover(std::string sequences_filename, std::string colors_filename);
 };

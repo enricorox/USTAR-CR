@@ -278,6 +278,52 @@ void ColorGraph::write_cover(std::string sequences_filename, std::string colors_
     }
 }
 
+ColorGraph::ColorGraph(const std::vector<std::string>& sequences, const std::vector<std::vector<color_id_t>>& colors,
+                       int kmer_length) {
+    this->sequences_file_name = "tmp";
+    this->colors_file_name = "tmp";
+    this->kmer_length = kmer_length;
+
+    if(kmer_length < 3){
+        cerr << "Error ColorGraph(): kmer_length must be at least 3" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    cout << "* Building the graph..." << endl;
+    build_graph(sequences, colors);
+    print_stats();
+    cout << "* Computing a path cover..." << endl;
+    compute_path_cover();
+    cout << "* Path cover ready!" << endl;
+}
+
+void ColorGraph::build_graph(const std::vector<std::string> &sequences, const std::vector<std::vector<color_id_t>> &colors) {
+    assert(sequences.size() == colors.size());
+
+    node_id_t node_id = 0;
+    for(size_t i = 0; i < sequences.size(); i++){
+        const string &sequence = sequences[i];
+        const vector<color_id_t> &sequence_colors = colors[i];
+        long length = static_cast<long>(sequence.size());
+
+        if(length < kmer_length){
+            cerr << "Error build_graph(): sequence too short!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        long n_kmer = length - kmer_length + 1;
+
+        // add node to the graph
+        nodes[node_id] = Node(sequence, sequence_colors);
+        nodes_head[sequence_colors.front()].push_back(node_id);
+        nodes_tail[sequence_colors.back()].push_back(node_id);
+
+        // update counters
+        tot_kmers += n_kmer;
+        node_id++;
+    }
+}
+
 Node::Node(std::string sequence, std::vector<color_id_t> colors) {
     this->sequence = std::move(sequence);
     this->colors = std::move(colors);
