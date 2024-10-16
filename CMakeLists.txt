@@ -41,8 +41,9 @@ add_executable(ustars
         src/Analyzer.cpp
         )
 
-add_executable(explode-rle src/exploderle.cpp)
+add_executable(explode-rle
+        src/exploderle.cpp)
 
-add_executable(optimize-rle src/optimize-rle.cpp
-        src/ColorGraph.cpp
+add_executable(optimize-rle
+        src/optimize-rle.cpp
         src/ColorGraph.cpp)
