@@ -93,7 +93,7 @@ enum class encoding_t{
     AVG_FLIP_RLE,
     BINARY,
     BWT,
-    GRAPH_RLE
+    OPT_RLE
 };
 // ----------------------------------------
 const map<encoding_t, string> encoding_suffixes = {
@@ -105,7 +105,7 @@ const map<encoding_t, string> encoding_suffixes = {
         {encoding_t::AVG_FLIP_RLE, ".avg_flip_rle"},
         {encoding_t::BINARY, ".bin"},
         {encoding_t::BWT, ".bwt"},
-        {encoding_t::GRAPH_RLE, ".graph_rle"}
+        {encoding_t::OPT_RLE, ".opt_rle"}
 };
 
 const map<string, encoding_t> encoding_names = {
@@ -117,7 +117,7 @@ const map<string, encoding_t> encoding_names = {
         {"avg_flip_rle", encoding_t::AVG_FLIP_RLE},
         {"bin", encoding_t::BINARY},
         {"bwt", encoding_t::BWT},
-        {"graph_rle", encoding_t::GRAPH_RLE}
+        {"opt_rle", encoding_t::OPT_RLE}
 };
 
 // -----------------------------------------------------

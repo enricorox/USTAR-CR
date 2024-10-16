@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include "consts.h"
+#include "ColorGraph.h"
 
 using namespace std;
 
@@ -33,6 +34,8 @@ class Encoder{
     vector<uint32_t> compacted_counts;
 
     long bwt_primary_index = 0;
+
+    ColorGraph *cg;
 
     void do_RLE();
 

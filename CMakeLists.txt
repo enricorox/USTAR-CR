@@ -15,6 +15,7 @@ add_executable(ustar
         src/Encoder.cpp
         src/commons.cpp
         src/bwt.hpp
+        src/ColorGraph.cpp
         )
 
 add_executable(ustar-test

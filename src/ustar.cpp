@@ -93,7 +93,7 @@ void print_help(const params_t &params){
     cout << "       avg_rle         sort simplitigs by average colors and use RLE\n";
     cout << "       flip_rle        make contiguous runs by flipping simplitigs if necessary and use RLE\n";
     cout << "       avg_flip_rle    make contiguous runs by sorting by average, flipping simplitigs if necessary and use RLE\n";
-    cout << "       graph_rle       make contiguous runs by solving another minimum vertex cover problem\n";
+    cout << "       opt_rle       make contiguous runs by solving another minimum vertex cover problem\n";
     cout << "\n";
 
     cout << "   -d  debug [" << (params.debug?"true":"false") << "]\n\n";
