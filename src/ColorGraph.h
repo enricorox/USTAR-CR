@@ -77,6 +77,7 @@ class ColorGraph{
 private:
     std::vector<color_id_t> values;
     std::vector<size_t> counts;
+
     std::string sequences_file_name;
     std::string colors_file_name;
     int kmer_length;
@@ -106,6 +107,8 @@ private:
 
     void compute_path_cover();
 
+    void finalize_path_cover();
+
     std::vector<color_id_t> decode_RLE_colors();
 
 public:
@@ -116,6 +119,10 @@ public:
     void write_colors(std::string colors_filename);
 
     void write_sequences(std::string sequences_filename);
+
+    size_t get_num_run();
+
+    double get_average_run();
 };
 
 #endif //USTAR_COLORGRAPH_H

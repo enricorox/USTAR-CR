@@ -105,6 +105,8 @@ void ColorGraph::compute_path_cover() {
         // collect paths
         paths.push_back(path);
     }
+
+    finalize_path_cover();
 }
 
 void ColorGraph::build_graph() {
@@ -248,6 +250,20 @@ oriented_node_t ColorGraph::next(Path path) {
     return oriented_node_t{next_node, next_orientation};
 }
 
+void ColorGraph::finalize_path_cover(){
+    for(auto &path: paths){
+        for(size_t i = 0; i < path.length(); i++){
+            node_id_t node_id = path.get_n_node_id(i);
+            Node &node = nodes.at(node_id); //nodes[node_id];
+            if(path.get_n_orientation(i) == orientation_t::reverse)
+                node.reverse();
+            encode_RLE(node.colors, values, counts);
+        }
+    }
+
+    assert(values.size() == counts.size());
+}
+
 void ColorGraph::write_sequences(std::string sequences_filename) {
     cout << "** Writing sequences to " << sequences_filename << endl;
     ofstream sequences_file(sequences_filename);
@@ -256,9 +272,6 @@ void ColorGraph::write_sequences(std::string sequences_filename) {
         for(size_t i = 0; i < path.length(); i++){
             node_id_t node_id = path.get_n_node_id(i);
             Node &node = nodes.at(node_id); //nodes[node_id];
-            if(path.get_n_orientation(i) == orientation_t::reverse)
-                node.reverse();
-            encode_RLE(node.colors, values, counts);
             sequences_file << ">\n" << node.sequence << "\n";
         }
     }
@@ -324,6 +337,17 @@ void ColorGraph::build_graph(const std::vector<std::string> &sequences, const st
         tot_kmers += n_kmer;
         node_id++;
     }
+}
+
+size_t ColorGraph::get_num_run() {
+    return counts.size();
+}
+
+double ColorGraph::get_average_run() {
+    size_t sum = 0;
+    for(auto v: counts)
+        sum += v;
+    return static_cast<double>(sum) / static_cast<double>(values.size());
 }
 
 Node::Node(std::string sequence, std::vector<color_id_t> colors) {
