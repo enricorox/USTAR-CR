@@ -135,7 +135,7 @@ void Encoder::to_colors_file(const string &file_name) {
         cg->write_colors(file_name);
         return;
     }
-    
+
     ofstream encoded;
     encoded.open(file_name);
     if(!encoded.good()){
@@ -345,6 +345,10 @@ void Encoder::print_stat(){
     }
     cout << "\nEncoding stats:\n";
     switch (encoding) {
+        case encoding_t::OPT_RLE:
+            cout << "   Number of runs: " << cg->get_num_run() << "\n";
+            cout << "   Average run:    " << cg->get_average_run() << "\n";
+            break;
         case encoding_t::BINARY:
             // no break here
         case encoding_t::AVG_FLIP_RLE:
@@ -352,8 +356,6 @@ void Encoder::print_stat(){
         case encoding_t::FLIP_RLE:
             // no break here
         case encoding_t::AVG_RLE:
-            // no break here
-        case encoding_t::OPT_RLE:
             // no break here
         case encoding_t::RLE:
             cout << "   Number of runs: " << runs.size() << "\n";
