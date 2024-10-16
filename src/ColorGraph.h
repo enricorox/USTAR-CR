@@ -10,7 +10,7 @@
 #include <list>
 
 typedef unsigned long node_id_t;
-typedef unsigned long color_id_t;
+typedef unsigned int color_id_t;
 
 inline char complement(char c);
 
@@ -75,6 +75,8 @@ public:
 
 class ColorGraph{
 private:
+    std::vector<color_id_t> values;
+    std::vector<size_t> counts;
     std::string sequences_file_name;
     std::string colors_file_name;
     int kmer_length;
@@ -111,7 +113,9 @@ public:
 
     ColorGraph(const std::vector<std::string>& sequences, const std::vector<std::vector<color_id_t>>& colors, int kmer_length = 0);
 
-    void write_cover(std::string sequences_filename, std::string colors_filename);
+    void write_colors(std::string colors_filename);
+
+    void write_sequences(std::string sequences_filename);
 };
 
 #endif //USTAR_COLORGRAPH_H

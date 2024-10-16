@@ -62,12 +62,13 @@ params_t parse_args(int argc, char **argv){
 int main(int argc, char **argv){
     params_t params = parse_args(argc, argv);
 
-    // ColorGraph cg = ColorGraph(params.sequences_file_name, params.colors_file_name, params.kmer_length);
+    ColorGraph cg = ColorGraph(params.sequences_file_name, params.colors_file_name, params.kmer_length);
 
-    ColorGraph cg = ColorGraph(vector<string>{"AAAC", "AAG", "ATT", "CCCC", "TTTT"},
-                               vector<vector<node_id_t>>{{0, 1}, {0}, {1}, {0, 1}, {2, 2}});
+    //ColorGraph cg = ColorGraph(vector<string>{"AAAC", "AAG", "ATT", "CCCC", "TTTT"},
+    //                           vector<vector<color_id_t>>{{0, 1}, {0}, {1}, {0, 1}, {2, 2}});
 
-    cg.write_cover(params.output_file_name + ".rleo.fa", params.output_file_name + ".rleo.colors");
+    cg.write_sequences(params.output_file_name + ".rleo.fa");
+    cg.write_colors(params.output_file_name + ".rleo.colors");
 
     return EXIT_SUCCESS;
 }

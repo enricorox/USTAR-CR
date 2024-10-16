@@ -248,12 +248,10 @@ oriented_node_t ColorGraph::next(Path path) {
     return oriented_node_t{next_node, next_orientation};
 }
 
-void ColorGraph::write_cover(std::string sequences_filename, std::string colors_filename) {
+void ColorGraph::write_sequences(std::string sequences_filename) {
     cout << "** Writing sequences to " << sequences_filename << endl;
     ofstream sequences_file(sequences_filename);
 
-    vector<color_id_t> values;
-    vector<size_t> counts;
     for(auto &path: paths){
         for(size_t i = 0; i < path.length(); i++){
             node_id_t node_id = path.get_n_node_id(i);
@@ -266,7 +264,9 @@ void ColorGraph::write_cover(std::string sequences_filename, std::string colors_
     }
 
    assert(values.size() == counts.size());
+}
 
+void ColorGraph::write_colors(std::string colors_filename){
     cout << "** Writing colors to " << colors_filename << "\n";
     cout << "       number of runs: " << counts.size() << endl;
     ofstream colors_file(colors_filename);
