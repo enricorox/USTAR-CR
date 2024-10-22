@@ -66,5 +66,6 @@ public:
 
     const vector<string> *get_sequences();
 
+    void clear();
 };
 #endif //USTAR_SPSS_H

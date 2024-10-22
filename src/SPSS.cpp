@@ -385,3 +385,8 @@ void SPSS::extract_sequences_and_colors(){
 const vector<string> *SPSS::get_sequences() {
     return SPSS::get_simplitigs();
 }
+
+void SPSS::clear(){
+    simplitigs.clear();
+    colors.clear();
+}

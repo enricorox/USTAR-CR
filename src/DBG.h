@@ -172,6 +172,8 @@ public:
     string spell(const node_idx_t path_nodes, const bool forwards);
 
     void get_colors(const node_idx_t path_nodes, const bool forwards, vector<uint32_t> &colors);
+
+    void clear();
 };
 
 #endif //USTAR_DBG_H

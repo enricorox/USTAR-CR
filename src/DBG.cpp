@@ -272,6 +272,10 @@ DBG::DBG(const string &bcalm_file_name, uint32_t kmer_size, bool debug){
     compute_graph_parameters();
 }
 
+DBG::~DBG(){
+    nodes.clear();
+}
+
 DBG::DBG(const vector<string> &simplitigs, const vector<vector<uint32_t>> &simplitigs_colors, bool debug){
     this->bcalm_file_name = "NULL";
 
@@ -377,8 +381,6 @@ void DBG::compute_graph_parameters(){
     avg_unitig_len = (double) sum_unitig_length / (double) nodes.size();
     avg_colors = sum_colors / (double) n_kmers;
 }
-
-DBG::~DBG() = default;
 
 void DBG::print_stat() {
     cout << "\n";
@@ -679,3 +681,6 @@ const vector<node_t> * DBG::get_nodes() {
     return &nodes;
 }
 
+void DBG::clear(){
+    nodes.clear();
+}

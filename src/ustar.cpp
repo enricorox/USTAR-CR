@@ -271,6 +271,8 @@ int main(int argc, char **argv) {
     spss.extract_simplitigs_and_colors();
     spss.print_stats();
 
+    dbg.clear(); // WARNING: this may be dangerous!
+
     Encoder encoder(spss.get_simplitigs(), spss.get_colors(), params.debug);
     encoder.encode(params.encoding);
     encoder.print_stat();
