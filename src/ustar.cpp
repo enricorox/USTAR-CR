@@ -277,9 +277,6 @@ int main(int argc, char **argv) {
     encoder.to_fasta_file(params.fasta_file_name);
     cout << "Simplitigs written to disk: " << params.fasta_file_name << endl;
 
-    // encoder.to_counts_file(params.counts_file_name);
-    // cout << "Counts written to disk: " << params.counts_file_name << endl;
-
     encoder.to_colors_file(params.colors_file_name);
     cout << "Colors written to disk: " << params.colors_file_name << endl;
 

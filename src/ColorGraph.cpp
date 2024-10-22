@@ -9,8 +9,10 @@
 #include <utility>
 #include <algorithm> // fix compilation on the server
 #include <cassert>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 inline char complement(char c){
     switch(c){
@@ -81,9 +83,27 @@ ColorGraph::ColorGraph(std::string sequences_file_name, std::string colors_file_
 }
 
 void ColorGraph::compute_path_cover() {
-    for(auto& node: nodes){
-        auto &seed = node.second;
-        auto seed_id = node.first;
+    auto start = chrono::steady_clock::now();
+
+    // set order
+    vector<node_id_t> order;
+    order.reserve(nodes.size());
+    for(node_id_t i = 0; i < nodes.size(); i++)
+        order.push_back(i);
+    sort(order.begin(), order.end(),[this](node_id_t a, node_id_t b){
+        auto a_conn = nodes_head[nodes[a].colors.back()].size() + nodes_tail[nodes[a].colors.back()].size() +
+                nodes_head[nodes[a].colors.front()].size() + nodes_tail[nodes[a].colors.front()].size();
+        auto b_conn = nodes_head[nodes[b].colors.back()].size() + nodes_tail[nodes[b].colors.back()].size() +
+                      nodes_head[nodes[b].colors.front()].size() + nodes_tail[nodes[b].colors.front()].size();
+        return a_conn < b_conn;
+    });
+
+    // start exploring...
+    for(auto& node_id: order){
+        //auto &seed = node.second;
+        //auto seed_id = node.first;
+        auto &seed = nodes[node_id];
+        auto seed_id = node_id;
 
         // skip visited nodes
         if(seed.is_visited())
@@ -105,11 +125,19 @@ void ColorGraph::compute_path_cover() {
         // collect paths
         paths.push_back(path);
     }
+    auto stop = chrono::steady_clock::now();
+    cout << "compute_path_cover() [1]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 
+    start = chrono::steady_clock::now();
     finalize_path_cover();
+
+    stop = chrono::steady_clock::now();
+    cout << "compute_path_cover() [2]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 }
 
 void ColorGraph::build_graph() {
+    auto start = steady_clock::now();
+
     // reading and decoding colors
     vector<color_id_t> colors = decode_RLE_colors();
 
@@ -153,6 +181,9 @@ void ColorGraph::build_graph() {
                 << "    colors.size() = " << colors.size() << endl;
         exit(EXIT_FAILURE);
     }
+
+    auto stop = chrono::steady_clock::now();
+    cout << "build_graph(): " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 }
 
 void ColorGraph::print_stats() const{
@@ -315,6 +346,8 @@ ColorGraph::ColorGraph(const std::vector<std::string>& sequences, const std::vec
 void ColorGraph::build_graph(const std::vector<std::string> &sequences, const std::vector<std::vector<color_id_t>> &colors) {
     assert(sequences.size() == colors.size());
 
+    auto start = chrono::steady_clock::now();
+
     node_id_t node_id = 0;
     for(size_t i = 0; i < sequences.size(); i++){
         const string &sequence = sequences[i];
@@ -337,6 +370,8 @@ void ColorGraph::build_graph(const std::vector<std::string> &sequences, const st
         tot_kmers += n_kmer;
         node_id++;
     }
+    auto stop = chrono::steady_clock::now();
+    cout << "build_graph(): " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 }
 
 size_t ColorGraph::get_num_run() {
