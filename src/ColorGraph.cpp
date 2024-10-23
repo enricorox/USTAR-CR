@@ -85,19 +85,33 @@ ColorGraph::ColorGraph(std::string sequences_file_name, std::string colors_file_
 void ColorGraph::compute_path_cover() {
     auto start = chrono::steady_clock::now();
 
-    // set order
+    // set order for seed
+    auto conn_key = [this](node_id_t a, node_id_t b){
+        auto a_conn = nodes_head[nodes[a].colors.back()].size() + nodes_tail[nodes[a].colors.back()].size() +
+                      nodes_head[nodes[a].colors.front()].size() + nodes_tail[nodes[a].colors.front()].size();
+        auto b_conn = nodes_head[nodes[b].colors.back()].size() + nodes_tail[nodes[b].colors.back()].size() +
+                      nodes_head[nodes[b].colors.front()].size() + nodes_tail[nodes[b].colors.front()].size();
+        return a_conn < b_conn;
+    };
     vector<node_id_t> order;
     order.reserve(nodes.size());
     for(node_id_t i = 0; i < nodes.size(); i++)
         order.push_back(i);
-    sort(order.begin(), order.end(),[this](node_id_t a, node_id_t b){
-        auto a_conn = nodes_head[nodes[a].colors.back()].size() + nodes_tail[nodes[a].colors.back()].size() +
-                nodes_head[nodes[a].colors.front()].size() + nodes_tail[nodes[a].colors.front()].size();
-        auto b_conn = nodes_head[nodes[b].colors.back()].size() + nodes_tail[nodes[b].colors.back()].size() +
-                      nodes_head[nodes[b].colors.front()].size() + nodes_tail[nodes[b].colors.front()].size();
-        return a_conn < b_conn;
-    });
+    sort(order.begin(), order.end(), conn_key);
 
+    // set order for neighbours
+    for(auto node: nodes_head){
+        auto &neighbours = node.second;
+        neighbours.sort(conn_key);
+    }
+    for(auto node: nodes_tail){
+        auto &neighbours = node.second;
+        neighbours.sort(conn_key);
+    }
+    auto stop = chrono::steady_clock::now();
+    cout << "compute_path_cover() [sort]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+
+    start = chrono::steady_clock::now();
     // start exploring...
     for(auto& node_id: order){
         //auto &seed = node.second;
@@ -125,14 +139,15 @@ void ColorGraph::compute_path_cover() {
         // collect paths
         paths.push_back(path);
     }
-    auto stop = chrono::steady_clock::now();
-    cout << "compute_path_cover() [1]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+    stop = chrono::steady_clock::now();
+    cout << "compute_path_cover() [explore]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 
     start = chrono::steady_clock::now();
+
     finalize_path_cover();
 
     stop = chrono::steady_clock::now();
-    cout << "compute_path_cover() [2]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+    cout << "compute_path_cover() [finalize]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 }
 
 void ColorGraph::build_graph() {
