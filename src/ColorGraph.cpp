@@ -86,6 +86,7 @@ void ColorGraph::compute_path_cover() {
     auto start = chrono::steady_clock::now();
 
     // set order for seed
+    /*
     auto conn_key = [this](node_id_t a, node_id_t b){
         auto a_conn = nodes_head[nodes[a].colors.back()].size() + nodes_tail[nodes[a].colors.back()].size() +
                       nodes_head[nodes[a].colors.front()].size() + nodes_tail[nodes[a].colors.front()].size();
@@ -93,23 +94,35 @@ void ColorGraph::compute_path_cover() {
                       nodes_head[nodes[b].colors.front()].size() + nodes_tail[nodes[b].colors.front()].size();
         return a_conn < b_conn;
     };
+     */
+    vector<node_id_t> degrees;
+    degrees.reserve(nodes.size());
+    for(node_id_t i = 0; i < nodes.size(); i++){
+        auto d = nodes_head[nodes[i].colors.front()].size() + nodes_tail[nodes[i].colors.front()].size();
+        degrees.push_back(d);
+    }
+    auto conn_key = [&degrees](node_id_t a, node_id_t b) {return degrees[a] < degrees[b];};
+
     vector<node_id_t> order;
     order.reserve(nodes.size());
     for(node_id_t i = 0; i < nodes.size(); i++)
         order.push_back(i);
     sort(order.begin(), order.end(), conn_key);
 
-    // set order for neighbours
-    for(auto node: nodes_head){
-        auto &neighbours = node.second;
-        neighbours.sort(conn_key);
-    }
-    for(auto node: nodes_tail){
-        auto &neighbours = node.second;
-        neighbours.sort(conn_key);
-    }
     auto stop = chrono::steady_clock::now();
-    cout << "compute_path_cover() [sort]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+    cout << "compute_path_cover() [sort nodes]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+
+    // set order for neighbours
+    for(auto colors_adj: nodes_head){
+        auto &neighbours = colors_adj.second;
+        neighbours.sort(conn_key);
+    }
+    for(auto colors_adj: nodes_tail){
+        auto &neighbours = colors_adj.second;
+        neighbours.sort(conn_key);
+    }
+    stop = chrono::steady_clock::now();
+    cout << "compute_path_cover() [sort arcs]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 
     start = chrono::steady_clock::now();
     // start exploring...
