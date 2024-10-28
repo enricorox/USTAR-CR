@@ -98,7 +98,8 @@ void ColorGraph::compute_path_cover() {
     vector<node_id_t> degrees;
     degrees.reserve(nodes.size());
     for(node_id_t i = 0; i < nodes.size(); i++){
-        auto d = nodes_head[nodes[i].colors.front()].size() + nodes_tail[nodes[i].colors.front()].size();
+        auto d = nodes_head[nodes[i].colors.front()].size() + nodes_tail[nodes[i].colors.front()].size() +
+                nodes_head[nodes[i].colors.back()].size() + nodes_tail[nodes[i].colors.back()].size();
         degrees.push_back(d);
     }
     auto conn_key = [&degrees](node_id_t a, node_id_t b) {return degrees[a] < degrees[b];};
