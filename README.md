@@ -16,18 +16,18 @@ You will find four executables and one bash script:
 * `validate`: a validation script
 
 ## Dependencies
-There are no dependencies. 
+Good news, there are no dependencies. 
 However, you'll need [GGCAT](https://github.com/algbio/ggcat) 
 in order to compute a colored compacted de Bruijn graph (cdBG) of your multi-fasta file.
 
 ## How to download and compile
-* `git clone https://github.com/enricorox/USTAR`.
-* `cd USTAR`
+* `git clone https://github.com/enricorox/USTAR3`.
+* `cd USTAR3`
 * `cmake . && make -j 4`.
 
-## How to run USTAR2
+## How to run USTAR3
 Run GGCAT first: 
-* `./GGCAT -k <kmer-size> -e -c <your-multi-fasta> 
+* `./GGCAT -k <kmer-size> -e -c <your-multi-fasta>`
 
 Then USTARC:
 * `./ustar -k <kmer-size> -i <GGCAT-output> -D7`
