@@ -18,7 +18,7 @@ in order to compute a colored compacted de Bruijn graph (cdBG) of your multi-fas
 * `cd USTAR3`
 * `cmake . && make -j 4`.
 
-## How to run USTAR3
+## How to run USTARC
 Run GGCAT first: 
 * `./GGCAT -k <kmer-size> -e -c <your-multi-fasta>`
 
