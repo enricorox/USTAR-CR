@@ -1,4 +1,4 @@
-# USTAR3 (Unitig STitch Advanced constRuction)
+# USTARC (Unitig STitch Advanced constRuction with Colors)
 ## Overview
 USTAR3 is a k-mers set compressor, with colors.
 
@@ -18,7 +18,7 @@ You will find four executables and one bash script:
 ## Dependencies
 There are no dependencies. 
 However, you'll need [GGCAT](https://github.com/algbio/ggcat) 
-in order to compute a compacted de Bruijn graph (cdBG) of your multi-fasta file.
+in order to compute a colored compacted de Bruijn graph (cdBG) of your multi-fasta file.
 
 ## How to download and compile
 * `git clone https://github.com/enricorox/USTAR`.
@@ -29,10 +29,11 @@ in order to compute a compacted de Bruijn graph (cdBG) of your multi-fasta file.
 Run GGCAT first: 
 * `./GGCAT -k <kmer-size> -e -c <your-multi-fasta> 
 
-Then USTAR3:
-* `./ustar -k <kmer-size> -i <GGCAT-output>`
+Then USTARC:
+* `./ustar -k <kmer-size> -i <GGCAT-output> -D7`
 
-To use the best heuristic, wait a little bit :)
+To use the best heuristic, and the optimized RLE for colors, add `-s+u -x-c -e opt_rle`:
+* `./ustar -k <kmer-size> -i <GGCAT-output> -D7 -s+c -x-c -e opt_rle`
 
 See the help `./ustar -h` for details and advanced options.
 
