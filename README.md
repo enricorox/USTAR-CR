@@ -33,6 +33,9 @@ See the help `./ustar -h` for details and advanced options.
 
 ## References
 
-If you are using USTARC in your research, please cite 
-`Extremely fast and succint compression of k-mers sets with plain text representation of colored de Bruijn graphs`
-(under sumbission).
+If you are using USTARC in your research, please cite (paper under sumbission) 
+
+```
+Extremely fast and succint compression of k-mers sets with plain text representation of colored de Bruijn graphs
+```
+.
