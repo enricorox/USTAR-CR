@@ -33,9 +33,11 @@ See the help `./ustar -h` for details and advanced options.
 
 ## References
 
-If you are using USTARC in your research, please cite (paper under sumbission) 
+If you are using USTARC in your research, please [cite](https://doi.org/10.1177/15578666261416557):
 
 ```
-Extremely fast and succint compression of k-mers sets with plain text representation of colored de Bruijn graphs
+Rossignolo E, Comin M. USTAR-CR: Efficient and Compact Compression of k-Mer Sets Through Colored de Bruijn Graphs.
+Journal of Computational Biology. 2026;0(0). 
+doi:10.1177/15578666261416557
 ```
 .
