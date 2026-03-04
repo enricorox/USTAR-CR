@@ -114,11 +114,11 @@ void ColorGraph::compute_path_cover() {
     cout << "compute_path_cover() [sort nodes]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 
     // set order for neighbours
-    for(auto colors_adj: nodes_head){
+    for(auto &colors_adj: nodes_head){
         auto &neighbours = colors_adj.second;
         neighbours.sort(conn_key);
     }
-    for(auto colors_adj: nodes_tail){
+    for(auto &colors_adj: nodes_tail){
         auto &neighbours = colors_adj.second;
         neighbours.sort(conn_key);
     }
@@ -154,7 +154,7 @@ void ColorGraph::compute_path_cover() {
         paths.push_back(path);
     }
     stop = chrono::steady_clock::now();
-    cout << "compute_path_cover() [explore]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
+    cout << __FUNCTION__ << " [explore]: " << duration_cast<seconds>(stop - start).count() << " seconds" << endl;
 
     start = chrono::steady_clock::now();
 

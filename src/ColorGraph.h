@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <string>
 
 typedef unsigned long node_id_t;
 typedef unsigned int color_id_t;
@@ -78,8 +79,8 @@ private:
     std::vector<color_id_t> values;
     std::vector<size_t> counts;
 
-    std::string sequences_file_name;
-    std::string colors_file_name;
+    std::string sequences_file_name{};
+    std::string colors_file_name{};
     int kmer_length;
     long tot_kmers = 0;
 
